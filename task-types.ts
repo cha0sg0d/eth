@@ -10,6 +10,7 @@ import type {
   DarkForestUtils,
   Verifier,
   Whitelist,
+  DaoContractPlayer
 } from '@darkforest_eth/contracts/typechain';
 import type { Contract } from 'ethers';
 
@@ -24,6 +25,7 @@ export {
   Verifier,
   Whitelist,
   DarkForestScoringRound3,
+  DaoContractPlayer
 };
 
 export interface LibraryContracts {

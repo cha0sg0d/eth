@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as prettier from 'prettier';
 import * as settings from '../settings';
 import type {
+  DaoContractPlayer,
   DarkForestCoreReturn,
   DarkForestGetters,
   DarkForestGPTCredit,
@@ -89,9 +90,14 @@ async function deploy(
   const coreAddress = darkForestCoreReturn.contract.address;
   console.log('DarkForestCore deployed to:', coreAddress);
 
-  // late initlialize tokens now that we have corecontract address
+  // late initialize tokens now that we have corecontract address
   const dftReceipt = await darkForestTokens.initialize(coreAddress, controllerWalletAddress);
   await dftReceipt.wait();
+
+  const daoPlayer: DaoContractPlayer = await hre.run('deploy:dao', {
+    coreAddress,
+    tokensAddress,
+  });
 
   const darkForestGetters: DarkForestGetters = await hre.run('deploy:getters', {
     controllerWalletAddress,

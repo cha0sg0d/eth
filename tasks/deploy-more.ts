@@ -16,6 +16,7 @@ import type {
   LibraryContracts,
   Verifier,
   Whitelist,
+  DaoContractPlayer
 } from '../task-types';
 
 subtask('deploy:getters', 'deploy and return getters')
@@ -266,4 +267,31 @@ async function deployProxyWithRetry<C extends Contract>({
       throw e;
     }
   }
+}
+
+
+subtask('deploy:dao', 'deploy dao and whitelist')
+  .addParam('whitelistAddress', '', undefined, types.string)
+  .addParam('tokensAddress', '', undefined, types.string)
+  .addParam('coreAddress', '', undefined, types.string)
+  .setAction(deployDao);
+
+async function deployDao(
+  args: {
+  coreAddress: string;
+  tokensAddress: string;
+},
+hre: HardhatRuntimeEnvironment
+): Promise<void> {
+  // deploy Dao
+  let DaoContractPlayerFactory = await hre.ethers.getContractFactory("DaoContractPlayer");
+  const daoPlayer = await DaoContractPlayerFactory.deploy(
+    args.coreAddress,
+    args.tokensAddress
+    ) as DaoContractPlayer;
+  await daoPlayer.deployed();
+  console.log(`deployed daoPlayer to ${daoPlayer.address}`);
+  // add dao to whitelist
+  // initalize dao
+  
 }
