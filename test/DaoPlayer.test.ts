@@ -53,24 +53,20 @@ describe('DarkForestDaoGift', function () {
 
     // Initialize player
     playerCore = world.user1Core;
-    daoCore = world.user2Core;
     player = world.user1;
     dao = world.user2;
 
     await playerCore.initializePlayer(...makeInitArgs(SPAWN_PLANET_1));
-    await daoCore.initializePlayer(...makeInitArgs(SPAWN_PLANET_2));
 
     // Conquer initial planets
 
-    //// Player 1
-    await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, ARTIFACT_PLANET_1);
-    await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, LVL1_ASTEROID_1);
-    await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, LVL3_SPACETIME_1);
-    await feedSilverToCap(world, playerCore, LVL1_ASTEROID_1, LVL3_SPACETIME_1);
-    //// Player 2
-    await conquerUnownedPlanet(world, daoCore, SPAWN_PLANET_2, ARTIFACT_PLANET_2);
-    await conquerUnownedPlanet(world, daoCore, SPAWN_PLANET_2, LVL3_SPACETIME_2);
-    await increaseBlockchainTime();
+    // Player 1
+    // await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, ARTIFACT_PLANET_1);
+    // await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, LVL1_ASTEROID_1);
+    // await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, LVL3_SPACETIME_1);
+    // await feedSilverToCap(world, playerCore, LVL1_ASTEROID_1, LVL3_SPACETIME_1);
+
+    // await increaseBlockchainTime();
 
     return world;
   }
@@ -84,14 +80,36 @@ describe('DarkForestDaoGift', function () {
       let DaoContractPlayerFactory = await ethers.getContractFactory("DaoContractPlayer");
       daoPlayer = await DaoContractPlayerFactory.deploy(world.contracts.core.address) as DaoContractPlayer;
       await daoPlayer.deployed();
+    
+      await world.contracts.whitelist.addKeys([
+        ethers.utils.id('XXXXX-XXXXX-XXXXX-XXXXX-XXXXX'),
+      ]);
       
       // whitelist the dao player
-      // const apiKey: string = 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX'
-      // const akReceipt = await world.contracts.whitelist.addKeys([ethers.utils.id(apiKey)]);
-      // await akReceipt.wait();
+      await world.contracts.whitelist.useKey('XXXXX-XXXXX-XXXXX-XXXXX-XXXXX', daoPlayer.address);
+
+      // initialize the dao player
+      await daoPlayer.initializePlayer(...makeInitArgs(SPAWN_PLANET_2));
   
-      // const ukReceipt = await world.contracts.whitelist.useKey(apiKey, daoPlayer.address);
-      // await ukReceipt.wait();
+      await expect((await world.contracts.core.players(daoPlayer.address)).isInitialized).is.equal(
+        true
+      );
+    });
+
+    it.skip('daoPlayer is whitelisted', async function (){
+      // console.log('daoPlayer', daoPlayer);
+      await world.contracts.whitelist.useKey('XXXXX-XXXXX-XXXXX-XXXXX-XXXXX', daoPlayer.address);
+      await expect(world.contracts.whitelist.isWhitelisted(daoPlayer.address));
+    });
+
+    it.skip('should allow daoPlayer to initialize after whitelisted', async function () {
+      await world.contracts.whitelist.useKey('XXXXX-XXXXX-XXXXX-XXXXX-XXXXX', daoPlayer.address);
+
+      await daoPlayer.initializePlayer(...makeInitArgs(SPAWN_PLANET_2));
+  
+      await expect((await world.contracts.core.players(daoPlayer.address)).isInitialized).is.equal(
+        true
+      );
     });
 
     it.skip('player can transfer planet', async function (){
