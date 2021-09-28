@@ -39,6 +39,7 @@ import { CORE_CONTRACT_ADDRESS } from '@darkforest_eth/contracts';
 
 const { BigNumber: BN } = ethers;
 
+const ARTIFACT_POINT_VALUES = [0, 2000, 10000, 200000, 3000000, 20000000];
 
 describe('DarkForestDaoGift', function () {
   let world: World;
@@ -61,10 +62,10 @@ describe('DarkForestDaoGift', function () {
     // Conquer initial planets
 
     // Player 1
-    // await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, ARTIFACT_PLANET_1);
-    // await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, LVL1_ASTEROID_1);
-    // await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, LVL3_SPACETIME_1);
-    // await feedSilverToCap(world, playerCore, LVL1_ASTEROID_1, LVL3_SPACETIME_1);
+    await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, ARTIFACT_PLANET_1);
+    await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, LVL1_ASTEROID_1);
+    await conquerUnownedPlanet(world, playerCore, SPAWN_PLANET_1, LVL3_SPACETIME_1);
+    await feedSilverToCap(world, playerCore, LVL1_ASTEROID_1, LVL3_SPACETIME_1);
 
     // await increaseBlockchainTime();
 
@@ -78,7 +79,10 @@ describe('DarkForestDaoGift', function () {
 
       // deploy the dao player
       let DaoContractPlayerFactory = await ethers.getContractFactory("DaoContractPlayer");
-      daoPlayer = await DaoContractPlayerFactory.deploy(world.contracts.core.address) as DaoContractPlayer;
+      daoPlayer = await DaoContractPlayerFactory.deploy(
+        world.contracts.core.address,
+        world.contracts.tokens.address
+        ) as DaoContractPlayer;
       await daoPlayer.deployed();
     
       await world.contracts.whitelist.addKeys([
@@ -94,12 +98,73 @@ describe('DarkForestDaoGift', function () {
       await expect((await world.contracts.core.players(daoPlayer.address)).isInitialized).is.equal(
         true
       );
+      daoPlayer = daoPlayer.connect(player)
+
     });
 
-    it.skip('daoPlayer is whitelisted', async function (){
-      // console.log('daoPlayer', daoPlayer);
-      await world.contracts.whitelist.useKey('XXXXX-XXXXX-XXXXX-XXXXX-XXXXX', daoPlayer.address);
-      await expect(world.contracts.whitelist.isWhitelisted(daoPlayer.address));
+    it('player can gift one planet w silver and receive planet back', async function (){
+      const planet = LVL3_SPACETIME_1;
+      await playerCore.refreshPlanet(planet.id)
+      let planetDetails = await playerCore.planets(planet.id);
+      let silver = planetDetails.silver.toNumber()
+      console.log('planet silver: ', silver);
+
+      await daoPlayer.updatePlanetOwners([planet.id]);
+      await playerCore.transferOwnership(planet.id, daoPlayer.address);
+      await daoPlayer.processAndReturnPlanets([planet.id],[]);
+
+      // player's contribution has gone up silver amount
+      expect ((await daoPlayer.contributions(player.address)).toNumber()).to.equal(planetDetails.silver.toNumber());
+
+      await playerCore.refreshPlanet(planet.id)
+      planetDetails = await playerCore.planets(planet.id);
+      silver = planetDetails.silver.toNumber()
+      // no more silver on planet
+      expect(silver).to.equal(0);
+      // player owns planet.
+      expect(planetDetails.owner).to.equal(player.address);
+    });
+
+    it('player can gift one foundry and receive planet back', async function (){
+      const planet = ARTIFACT_PLANET_1;
+      await playerCore.refreshPlanet(planet.id)
+      let planetDetails = await playerCore.planets(planet.id);
+      let silver = planetDetails.silver.toNumber()
+      console.log('planet silver: ', silver);
+      // console.log('artifactPlanet', ARTIFACT_PLANET_1);
+
+      await playerCore.prospectPlanet(ARTIFACT_PLANET_1.id);
+      await daoPlayer.updatePlanetOwners([planet.id]);
+      await playerCore.transferOwnership(planet.id, daoPlayer.address);
+      const findArgs = makeFindArtifactArgs(planet);
+      // console.log(`find args`, findArgs);
+      // @ts-expect-error
+      await daoPlayer.processAndReturnPlanets([],[findArgs]);
+      
+
+      await playerCore.refreshPlanet(planet.id)
+      planetDetails = await playerCore.planets(planet.id);
+      // player owns planet.
+      expect(planetDetails.owner).to.equal(player.address);
+      // planet now has an artifact
+      const artifactsOnPlanet = await world.contracts.core.planetArtifacts(ARTIFACT_PLANET_1.id);
+      expect(artifactsOnPlanet.length).to.not.be.equal(0);
+
+      const artifact = await world.contracts.getters.getArtifactById(artifactsOnPlanet[0]);
+
+      // artifact.discoverer is the dao contract
+      expect (artifact.artifact.discoverer).to.equal(daoPlayer.address);
+
+      const expectedArtifactValue = ARTIFACT_POINT_VALUES[artifact.artifact.rarity];
+      console.log(`expecting ${expectedArtifactValue} points from artifact`); 
+      expect ((await daoPlayer.contributions(player.address)).toNumber()).to.equal(expectedArtifactValue);
+
+      // artifact.owner is the core contract (no owner until artifact is withdrawn)
+      console.log('artifact owner', artifact.owner)
+      console.log('dao addr', daoPlayer.address)
+      console.log('player addr', player.address)
+      //expect (artifact.owner).to.equal(player.address);
+      
     });
 
     it.skip('should allow daoPlayer to initialize after whitelisted', async function () {
@@ -112,9 +177,5 @@ describe('DarkForestDaoGift', function () {
       );
     });
 
-    it.skip('player can transfer planet', async function (){
-      console.log(`deploy success: ${daoPlayer.address}`);
-
-    });
   });
 });
