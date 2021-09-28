@@ -125,4 +125,6 @@ contract DaoContractPlayer {
             returnPlanet(foundryData.input[0]);
         }
     }
+
+    receive() external payable {}
 }
