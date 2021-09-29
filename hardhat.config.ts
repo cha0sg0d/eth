@@ -20,6 +20,7 @@ import './tasks/upgrades';
 import './tasks/utils';
 import './tasks/wallet';
 import './tasks/whitelist';
+import './tasks/dao';
 
 require('dotenv').config();
 
