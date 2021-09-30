@@ -94,11 +94,6 @@ async function deploy(
   const dftReceipt = await darkForestTokens.initialize(coreAddress, controllerWalletAddress);
   await dftReceipt.wait();
 
-  const daoPlayer: DaoContractPlayer = await hre.run('deploy:dao', {
-    coreAddress,
-    tokensAddress,
-  });
-
   const darkForestGetters: DarkForestGetters = await hre.run('deploy:getters', {
     controllerWalletAddress,
     coreAddress,
