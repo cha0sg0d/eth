@@ -102,7 +102,7 @@ describe('DarkForestDaoGift', function () {
 
     });
 
-    it('player can gift one planet w silver and receive planet back', async function (){
+    it('player can gift one rip w silver and receive planet back', async function (){
       const planet = LVL3_SPACETIME_1;
       await playerCore.refreshPlanet(planet.id)
       let planetDetails = await playerCore.planets(planet.id);
