@@ -13,7 +13,7 @@ ROUND_END = 2021-08-22T16:00:00.000Z # Sun Aug 22 2021 12:00:00 EST
 ##################################
 # SNARK keys & Perlin parameters #
 ##################################
-DISABLE_ZK_CHECKS = false
+DISABLE_ZK_CHECKS = true
 PLANETHASH_KEY = 1729
 SPACETYPE_KEY = 1730
 BIOMEBASE_KEY = 1731
@@ -25,7 +25,7 @@ PERLIN_LENGTH_SCALE = 16384 # must be a power of two no greater than 16384
 # Game configuration #
 ######################
 MAX_NATURAL_PLANET_LEVEL = 256
-TIME_FACTOR_HUNDREDTHS = 100 # speedup/slowdown game
+TIME_FACTOR_HUNDREDTHS = 500 # speedup/slowdown game
 PERLIN_THRESHOLD_1 = 1
 PERLIN_THRESHOLD_2 = 2
 PERLIN_THRESHOLD_3 = 18
