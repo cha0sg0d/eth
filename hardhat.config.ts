@@ -20,6 +20,7 @@ import './tasks/game';
 import './tasks/subgraph';
 import './tasks/debug';
 import './tasks/gpt-credits';
+import './tasks/dao';
 
 require('dotenv').config();
 

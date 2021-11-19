@@ -289,9 +289,9 @@ library DarkForestPlanet {
         }
 
         // apply time factor
-        _planet.speed *= args.TIME_FACTOR_HUNDREDTHS / 100;
-        _planet.populationGrowth *= args.TIME_FACTOR_HUNDREDTHS / 100;
-        _planet.silverGrowth *= args.TIME_FACTOR_HUNDREDTHS / 100;
+        _planet.speed *= 1000;
+        _planet.populationGrowth *= 1000;
+        _planet.silverGrowth *= 1000;
 
         // metadata
         _planetExtendedInfo.isInitialized = true;

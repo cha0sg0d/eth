@@ -232,6 +232,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.initializedPlanetCountByLevel[args.level] += 1;
     }
 
+    function setOwner(uint256 planetId, address newOwner) public {
+        s.planets[planetId].owner = newOwner;
+    }
+
     //////////////////////
     /// Game Mechanics ///
     //////////////////////
