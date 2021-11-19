@@ -4,7 +4,7 @@ import type {
   DarkForestCore,
   DarkForestTokens,
   Whitelist,
-  DaoContractPlayer
+  AstralColossus
 } from '@darkforest_eth/contracts/typechain';
 import CORE_ABI from '@darkforest_eth/contracts/abis/DarkForestCore.json';
 import WHITELIST_ABI from '@darkforest_eth/contracts/abis/Whitelist.json';
@@ -22,12 +22,12 @@ async function dao(
   // connect to deployed contracts.
 
   // deploy Dao
-  let DaoContractPlayerFactory = await hre.ethers.getContractFactory("DaoContractPlayer");
+  let AstralColossusFactory = await hre.ethers.getContractFactory("AstralColossus");
 
-  const daoPlayer = await DaoContractPlayerFactory.deploy(
+  const daoPlayer = await AstralColossusFactory.deploy(
     hre.contracts.CORE_CONTRACT_ADDRESS,
     hre.contracts.TOKENS_CONTRACT_ADDRESS
-    ) as DaoContractPlayer;
+    ) as AstralColossus;
 
   const address = daoPlayer.address;
     
@@ -48,6 +48,7 @@ async function dao(
 
   console.log('deployer address', deployer.address);
   
+  console.log('player contributions', await daoPlayer.contributions(PLAYER_ADDRESS));
   const from = deployer.address;
   const to = daoPlayer.address;
   await hre.run('wallet:send', { from, to, value: 20, dry: false});
@@ -57,19 +58,16 @@ async function dao(
   // don't need to whitelist; just need to deploy dao.
   
   // this is the public key of the first generic player
-  // const playerAddress = '0x1c0f0af3262a7213e59be7f1440282279d788335'
-  // await hre.run('whitelist:registerAddress', { playerAddress });
+  const playerAddress = '0x1c0f0af3262a7213e59be7f1440282279d788335'
+  await hre.run('whitelist:registerAddress', { playerAddress });
 
-  // await hre.run('whitelist:registerAddress', { address });
+  await hre.run('whitelist:registerAddress', { address });
   
-  // const dao = await core.players(daoPlayer.address);
-  // console.log('dao pre init', dao);
-  // console.log('dao is whitelisted?', await whiteList.isWhitelisted(daoPlayer.address));
+  const dao = await core.players(daoPlayer.address);
+  console.log('dao pre init', dao);
+  console.log('dao is whitelisted?', await whiteList.isWhitelisted(daoPlayer.address));
   
-
-  
-  //
-    // await daoPlayerInit();
+  // await daoPlayerInit();
 };
 
 
