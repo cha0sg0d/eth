@@ -17,9 +17,9 @@ async function dao(
   hre: HardhatRuntimeEnvironment
 ) {
 
-  // Were only using one account, getSigners()[0], the deployer. Becomes the ProxyAdmin
+  // // We're only using one account, getSigners()[0], the deployer. Becomes the ProxyAdmin
   const [deployer] = await hre.ethers.getSigners();
-  // connect to deployed contracts.
+  // // connect to deployed contracts.
 
   // deploy Dao
   let AstralColossusFactory = await hre.ethers.getContractFactory("AstralColossus");
