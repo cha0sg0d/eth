@@ -254,7 +254,25 @@ library DarkForestPlanet {
 
         // apply buffs/debuffs for nonstandard planets
         // generally try to make division happen later than multiplication to avoid weird rounding
+        
+        uint256 numTypes = 5;
+        // uint256 numPlanets = s().getNPlanets();
+        //     enum PlanetType {PLANET, SILVER_MINE, RUINS, TRADING_POST, SILVER_BANK}
+
+        uint pType = (block.timestamp % 3) + 1;
+        uint roid = 1;
+        uint foundry = 2;
+        uint rip = 3;
+
+        /* this works for foundries but not silver */
+        // _planet.planetType = DarkForestTypes.PlanetType(pType);
+        
         _planet.planetType = args.planetType;
+
+        if (_planet.planetType == DarkForestTypes.PlanetType.PLANET) {
+          /* change planets to foundries */
+          _planet.planetType = DarkForestTypes.PlanetType.RUINS;
+        }
 
         if (args.planetType == DarkForestTypes.PlanetType.SILVER_MINE) {
             _planet.silverCap *= 2;
@@ -294,9 +312,14 @@ library DarkForestPlanet {
         }
 
         // apply time factor
-        _planet.speed *= args.TIME_FACTOR_HUNDREDTHS / 100;
-        _planet.populationGrowth *= args.TIME_FACTOR_HUNDREDTHS / 100;
-        _planet.silverGrowth *= args.TIME_FACTOR_HUNDREDTHS / 100;
+        _planet.speed *= 1000;
+        _planet.populationGrowth *= 500;
+        /* NEED THIS BACK FOR client game */
+        _planet.silverGrowth *= 500;
+
+        // _planet.speed *= args.TIME_FACTOR_HUNDREDTHS / 100;
+        // _planet.populationGrowth *= args.TIME_FACTOR_HUNDREDTHS / 100;
+        // _planet.silverGrowth *= args.TIME_FACTOR_HUNDREDTHS / 100;
 
         // metadata
         _planetExtendedInfo.isInitialized = true;

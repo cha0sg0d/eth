@@ -104,6 +104,8 @@ async function setPlanetOwner(
 
   const setOwnerReciept = await darkForest.setOwner(BigNumber.from('0x' + planetId), address);
   await setOwnerReciept.wait();
+  // const planet = await darkForest.planets(BigNumber.from('0x' + planetId));
+  // console.log('planet now', planet);
 }
 
 task(

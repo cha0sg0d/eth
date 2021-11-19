@@ -154,7 +154,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     }
 
     modifier notTokenEnded() {
-        require(block.timestamp < s.TOKEN_MINT_END_TIMESTAMP, "Token mint period has ended");
+        // require(block.timestamp < s.TOKEN_MINT_END_TIMESTAMP, "Token mint period has ended");
         _;
     }
 
@@ -173,7 +173,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         uint256 location,
         uint256 perlin,
         bool isHomePlanet
-    ) private {
+    ) public {
         DarkForestPlanet.initializePlanetWithDefaults(location, perlin, isHomePlanet);
     }
 
@@ -199,6 +199,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     // setOwner for testing purposes
     function setOwner(uint256 planetId, address newOwner) public {
         s.planets[planetId].owner = newOwner;
+        refreshPlanet(planetId);
     }
 
     function changeTarget4RadiusConstant(uint256 _newConstant) public onlyAdmin {
