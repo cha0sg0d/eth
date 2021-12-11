@@ -11,7 +11,7 @@ INITIAL_WORLD_RADIUS = 8000
 ##################################
 # SNARK keys & Perlin parameters #
 ##################################
-DISABLE_ZK_CHECKS = false
+DISABLE_ZK_CHECKS = true
 PLANETHASH_KEY = 6278
 SPACETYPE_KEY = 6279
 BIOMEBASE_KEY = 6270
