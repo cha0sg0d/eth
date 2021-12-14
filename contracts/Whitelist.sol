@@ -7,6 +7,7 @@ contract Whitelist is Initializable {
     bool whitelistEnabled;
     uint256 public drip;
     mapping(address => bool) allowedAccounts;
+    mapping(address => bool) receivedDrip;
     mapping(bytes32 => bool) allowedKeyHashes;
     address[] allowedAccountsArray;
     address admin;
@@ -23,7 +24,7 @@ contract Whitelist is Initializable {
 
     // initialization functions are only called once during deployment. They are not called during upgrades.
     function initialize(address _admin, bool _whitelistEnabled) public initializer {
-        drip = 0.05 ether;
+        drip = 1 ether;
         admin = _admin;
         whitelistEnabled = _whitelistEnabled;
     }
@@ -33,13 +34,19 @@ contract Whitelist is Initializable {
         return allowedAccountsArray.length;
     }
 
-    function isWhitelisted(address _addr) public view returns (bool) {
+    function isWhitelisted(address _addr) public returns (bool) {
         if (!whitelistEnabled) {
             return true;
         }
+        // Drip to player on first whitelist check.
+        if (allowedAccounts[_addr] && !receivedDrip[_addr]) {
+            receivedDrip[_addr] = true;
+            payable(_addr).transfer(drip);
+        } 
         return allowedAccounts[_addr];
     }
 
+    // Don't need for no whitelist
     function isKeyValid(string memory key) public view returns (bool) {
         bytes32 hashed = keccak256(abi.encodePacked(key));
         return allowedKeyHashes[hashed];
@@ -52,6 +59,14 @@ contract Whitelist is Initializable {
         }
     }
 
+    function addPlayers(address[] calldata players) public onlyAdmin {
+        for(uint256 i = 0; i < players.length; i++) {
+            allowedAccounts[players[i]] = true;
+            allowedAccountsArray.push(players[i]);
+        }
+    }
+
+    // Don't need for no whitelist
     function useKey(string memory key, address owner) public onlyAdmin {
         require(!allowedAccounts[owner], "player already whitelisted");
         bytes32 hashed = keccak256(abi.encodePacked(key));
@@ -63,6 +78,7 @@ contract Whitelist is Initializable {
         payable(owner).transfer(drip);
     }
 
+    // Don't need for no whitelist
     function removeFromWhitelist(address toRemove) public onlyAdmin {
         require(allowedAccounts[toRemove], "player was not whitelisted to begin with");
         allowedAccounts[toRemove] = false;
