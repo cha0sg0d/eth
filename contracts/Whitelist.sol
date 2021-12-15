@@ -6,11 +6,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 contract Whitelist is Initializable {
     bool whitelistEnabled;
     uint256 public drip;
-    mapping(address => bool) allowedAccounts;
-    mapping(address => bool) receivedDrip;
+    mapping(address => bool) public allowedAccounts;
+    mapping(address => bool) public receivedDrip;
     mapping(bytes32 => bool) allowedKeyHashes;
-    address[] allowedAccountsArray;
+    address[] public allowedAccountsArray;
     address admin;
+    uint256 public numPlayers;
 
     // administrative
     modifier onlyAdmin() {
@@ -58,22 +59,31 @@ contract Whitelist is Initializable {
     function sendDrip(address _addr) public onlyAdmin {
         require(allowedAccounts[_addr], "player not whitelisted");
         require(!receivedDrip[_addr], "player already received drip");
+        require(address(this).balance > drip, "not enough $ in contract to drip");
 
         receivedDrip[_addr] = true;
         (bool success, ) = _addr.call{value: drip}("");
         require(success, "Transfer failed.");
     }
+
+    function addPlayer(address _addr) public onlyAdmin {
+        require(!allowedAccounts[_addr], "player already whitelisted");
+        allowedAccounts[_addr] = true;
+        allowedAccountsArray.push(_addr);
+        numPlayers++;
+    }
     
-    // add players to whitelist
     function addAndDripPlayers(address[] calldata players) public onlyAdmin {
         for(uint256 i = 0; i < players.length; i++) {
             address player = players[i];
-            allowedAccounts[player] = true;
-            allowedAccountsArray.push(player);
 
-            // extra check to avoid reverting 
+            // extra check to avoid reverting in loop
+            if(!allowedAccounts[player]) {
+                addPlayer(player);
+            }
+            // extra check to avoid reverting in loop
             if(allowedAccounts[player] && !receivedDrip[player] && address(this).balance > drip) {
-                sendDrip(players[i]);
+                sendDrip(player);
             }
         }
     }
