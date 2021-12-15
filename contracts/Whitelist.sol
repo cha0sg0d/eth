@@ -24,7 +24,7 @@ contract Whitelist is Initializable {
 
     // initialization functions are only called once during deployment. They are not called during upgrades.
     function initialize(address _admin, bool _whitelistEnabled) public initializer {
-        drip = 1 ether;
+        drip = 0.015 ether;
         admin = _admin;
         whitelistEnabled = _whitelistEnabled;
     }
@@ -34,15 +34,10 @@ contract Whitelist is Initializable {
         return allowedAccountsArray.length;
     }
 
-    function isWhitelisted(address _addr) public returns (bool) {
+    function isWhitelisted(address _addr) public view returns (bool) {
         if (!whitelistEnabled) {
             return true;
         }
-        // Drip to player on first whitelist check.
-        if (allowedAccounts[_addr] && !receivedDrip[_addr]) {
-            receivedDrip[_addr] = true;
-            payable(_addr).transfer(drip);
-        } 
         return allowedAccounts[_addr];
     }
 
@@ -52,17 +47,34 @@ contract Whitelist is Initializable {
         return allowedKeyHashes[hashed];
     }
 
-    // modify whitelist
+    // Don't need for no whitelist
     function addKeys(bytes32[] memory hashes) public onlyAdmin {
         for (uint16 i = 0; i < hashes.length; i++) {
             allowedKeyHashes[hashes[i]] = true;
         }
     }
 
-    function addPlayers(address[] calldata players) public onlyAdmin {
+    // Should I use msg.sender or _addr here? 
+    function sendDrip(address _addr) public onlyAdmin {
+        require(allowedAccounts[_addr], "player not whitelisted");
+        require(!receivedDrip[_addr], "player already received drip");
+
+        receivedDrip[_addr] = true;
+        (bool success, ) = _addr.call{value: drip}("");
+        require(success, "Transfer failed.");
+    }
+    
+    // add players to whitelist
+    function addAndDripPlayers(address[] calldata players) public onlyAdmin {
         for(uint256 i = 0; i < players.length; i++) {
-            allowedAccounts[players[i]] = true;
-            allowedAccountsArray.push(players[i]);
+            address player = players[i];
+            allowedAccounts[player] = true;
+            allowedAccountsArray.push(player);
+
+            // extra check to avoid reverting 
+            if(allowedAccounts[player] && !receivedDrip[player] && address(this).balance > drip) {
+                sendDrip(players[i]);
+            }
         }
     }
 
