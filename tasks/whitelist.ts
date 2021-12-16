@@ -1,7 +1,8 @@
 import * as fs from 'fs';
+import { ethers } from 'hardhat';
 import { subtask, task, types } from 'hardhat/config';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import type { Whitelist } from '../task-types';
+import type { Whitelist, DarkForestCore } from '../task-types';
 import { generateKey, generateKeys, keysPerTx } from './whitelist-helpers';
 
 task('whitelist:changeDrip', 'change the faucet amount for whitelisted players')
@@ -90,6 +91,10 @@ async function whitelistExistsAddress(args: { address: string }, hre: HardhatRun
 
   const whitelist: Whitelist = await hre.run('utils:getWhitelist');
 
+  // console.log('signer network', await whitelist.signer.provider?.getNetwork());
+  // console.log('signer address', await whitelist.signer.getAddress());
+  // console.log('deployer address', (await hre.ethers.getSigners())[0].address);
+
   const isAddress = hre.ethers.utils.isAddress(args.address);
   if (!isAddress) {
     throw new Error(`Address ${args.address} is NOT a valid address.`);
@@ -118,6 +123,52 @@ async function whitelistExistsKey(args: { key: string }, hre: HardhatRuntimeEnvi
   console.log('whitelist balance:', hre.ethers.utils.formatEther(balance));
 
   console.log(`Key ${args.key} is${isValid ? '' : ' NOT'} valid.`);
+}
+
+task(
+  'whitelist-nokey:register',
+  'add address or list of addresses to whitelist using no-key method'
+) 
+  .addParam(
+    'address',
+    'network address (or comma seperated list of addresses)',
+    undefined,
+    types.string
+)
+.setAction(noKeyWhitelistRegister);
+
+async function noKeyWhitelistRegister(args: { address: string }, hre: HardhatRuntimeEnvironment) {
+  await hre.run('utils:assertChainId');
+
+  const whitelist: Whitelist = await hre.run('utils:getWhitelist');
+
+  const prevBalance = await hre.ethers.provider.getBalance(whitelist.address);
+  console.log('whitelist balance before adding:', hre.ethers.utils.formatEther(prevBalance));
+
+  const prevPlayers = await whitelist.numPlayers();
+  console.log('num whitelisted players before adding:', prevPlayers.toNumber());
+
+  const addresses = args.address.split(',');
+  const validAddresses = addresses
+      .filter(hre.ethers.utils.isAddress);
+
+  const addTx = await whitelist.addAndDripPlayers(validAddresses);
+  await addTx.wait();
+
+  const currBalance = await hre.ethers.provider.getBalance(whitelist.address);
+  console.log('whitelist balance after adding:', hre.ethers.utils.formatEther(currBalance));
+
+  const currPlayers = await whitelist.numPlayers();
+  console.log('num whitelisted players after adding:', currPlayers.toNumber());
+
+  const newPlayers = currPlayers.sub(prevPlayers).toNumber()
+  if(newPlayers != validAddresses.length) {
+    console.log("WARNING: not all players in list were successfully added");
+  }
+
+  const sentAmount = hre.ethers.utils.formatEther(prevBalance.sub(currBalance));
+
+  console.log(`[${new Date()}] Registered ${newPlayers} players with $${sentAmount} xDAI.`);
 }
 
 task(

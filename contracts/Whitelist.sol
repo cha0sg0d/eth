@@ -6,10 +6,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 contract Whitelist is Initializable {
     bool whitelistEnabled;
     uint256 public drip;
-    mapping(address => bool) allowedAccounts;
+    mapping(address => bool) public allowedAccounts;
+    mapping(address => bool) public receivedDrip;
     mapping(bytes32 => bool) allowedKeyHashes;
-    address[] allowedAccountsArray;
+    address[] public allowedAccountsArray;
     address admin;
+    uint256 public numPlayers;
 
     // administrative
     modifier onlyAdmin() {
@@ -23,7 +25,7 @@ contract Whitelist is Initializable {
 
     // initialization functions are only called once during deployment. They are not called during upgrades.
     function initialize(address _admin, bool _whitelistEnabled) public initializer {
-        drip = 0.05 ether;
+        drip = 0.15 ether;
         admin = _admin;
         whitelistEnabled = _whitelistEnabled;
     }
@@ -40,18 +42,53 @@ contract Whitelist is Initializable {
         return allowedAccounts[_addr];
     }
 
+    // Don't need for no whitelist
     function isKeyValid(string memory key) public view returns (bool) {
         bytes32 hashed = keccak256(abi.encodePacked(key));
         return allowedKeyHashes[hashed];
     }
 
-    // modify whitelist
+    // Don't need for no whitelist
     function addKeys(bytes32[] memory hashes) public onlyAdmin {
         for (uint16 i = 0; i < hashes.length; i++) {
             allowedKeyHashes[hashes[i]] = true;
         }
     }
 
+    // Should I use msg.sender or _addr here? 
+    function sendDrip(address _addr) public onlyAdmin {
+        require(allowedAccounts[_addr], "player not whitelisted");
+        require(!receivedDrip[_addr], "player already received drip");
+        require(address(this).balance > drip, "not enough $ in contract to drip");
+
+        receivedDrip[_addr] = true;
+        (bool success, ) = _addr.call{value: drip}("");
+        require(success, "Transfer failed.");
+    }
+
+    function addPlayer(address _addr) public onlyAdmin {
+        require(!allowedAccounts[_addr], "player already whitelisted");
+        allowedAccounts[_addr] = true;
+        allowedAccountsArray.push(_addr);
+        numPlayers++;
+    }
+    
+    function addAndDripPlayers(address[] calldata players) public onlyAdmin {
+        for(uint256 i = 0; i < players.length; i++) {
+            address player = players[i];
+
+            // extra check to avoid reverting in loop
+            if(!allowedAccounts[player]) {
+                addPlayer(player);
+            }
+            // extra check to avoid reverting in loop
+            if(allowedAccounts[player] && !receivedDrip[player] && address(this).balance > drip) {
+                sendDrip(player);
+            }
+        }
+    }
+
+    // Don't need for no whitelist
     function useKey(string memory key, address owner) public onlyAdmin {
         require(!allowedAccounts[owner], "player already whitelisted");
         bytes32 hashed = keccak256(abi.encodePacked(key));
@@ -63,6 +100,7 @@ contract Whitelist is Initializable {
         payable(owner).transfer(drip);
     }
 
+    // Don't need for no whitelist
     function removeFromWhitelist(address toRemove) public onlyAdmin {
         require(allowedAccounts[toRemove], "player was not whitelisted to begin with");
         allowedAccounts[toRemove] = false;
