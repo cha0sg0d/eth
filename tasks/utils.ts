@@ -2,7 +2,7 @@ import { subtask } from 'hardhat/config';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DarkForestCore, DarkForestTokens, Whitelist } from '../task-types';
 
-subtask('utils:assertChainId', 'Assert proper network is selectaed').setAction(assertChainId);
+subtask('utils:assertChainId', 'Assert proper network is selected').setAction(assertChainId);
 
 async function assertChainId({}, hre: HardhatRuntimeEnvironment) {
   const { NETWORK_ID } = hre.contracts;
