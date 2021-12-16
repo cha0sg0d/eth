@@ -55,7 +55,6 @@ contract Whitelist is Initializable {
         }
     }
 
-    // Should I use msg.sender or _addr here? 
     function sendDrip(address _addr) public onlyAdmin {
         require(allowedAccounts[_addr], "player not whitelisted");
         require(!receivedDrip[_addr], "player already received drip");
@@ -63,7 +62,7 @@ contract Whitelist is Initializable {
 
         receivedDrip[_addr] = true;
         (bool success, ) = _addr.call{value: drip}("");
-        require(success, "Transfer failed.");
+        require(success, "Drip failed.");
     }
 
     function addPlayer(address _addr) public onlyAdmin {
@@ -88,7 +87,6 @@ contract Whitelist is Initializable {
         }
     }
 
-    // Don't need for no whitelist
     function useKey(string memory key, address owner) public onlyAdmin {
         require(!allowedAccounts[owner], "player already whitelisted");
         bytes32 hashed = keccak256(abi.encodePacked(key));
@@ -100,7 +98,6 @@ contract Whitelist is Initializable {
         payable(owner).transfer(drip);
     }
 
-    // Don't need for no whitelist
     function removeFromWhitelist(address toRemove) public onlyAdmin {
         require(allowedAccounts[toRemove], "player was not whitelisted to begin with");
         allowedAccounts[toRemove] = false;
