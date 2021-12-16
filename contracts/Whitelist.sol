@@ -25,7 +25,7 @@ contract Whitelist is Initializable {
 
     // initialization functions are only called once during deployment. They are not called during upgrades.
     function initialize(address _admin, bool _whitelistEnabled) public initializer {
-        drip = 0.015 ether;
+        drip = 0.15 ether;
         admin = _admin;
         whitelistEnabled = _whitelistEnabled;
     }
