@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { ethers } from 'hardhat';
 import { subtask, task, types } from 'hardhat/config';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import type { Whitelist, DarkForestCore } from '../task-types';
@@ -90,6 +91,10 @@ async function whitelistExistsAddress(args: { address: string }, hre: HardhatRun
 
   const whitelist: Whitelist = await hre.run('utils:getWhitelist');
 
+  // console.log('signer network', await whitelist.signer.provider?.getNetwork());
+  // console.log('signer address', await whitelist.signer.getAddress());
+  // console.log('deployer address', (await hre.ethers.getSigners())[0].address);
+
   const isAddress = hre.ethers.utils.isAddress(args.address);
   if (!isAddress) {
     throw new Error(`Address ${args.address} is NOT a valid address.`);
@@ -121,7 +126,7 @@ async function whitelistExistsKey(args: { key: string }, hre: HardhatRuntimeEnvi
 }
 
 task(
-  'nokey-whitelist:register',
+  'whitelist-nokey:register',
   'add address or list of addresses to whitelist using no-key method'
 ) 
   .addParam(
@@ -158,7 +163,7 @@ async function noKeyWhitelistRegister(args: { address: string }, hre: HardhatRun
 
   const newPlayers = currPlayers.sub(prevPlayers).toNumber()
   if(newPlayers != validAddresses.length) {
-    console.log("Warning: not all players in list were successfully added");
+    console.log("WARNING: not all players in list were successfully added");
   }
 
   const sentAmount = hre.ethers.utils.formatEther(prevBalance.sub(currBalance));
