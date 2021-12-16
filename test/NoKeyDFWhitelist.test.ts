@@ -35,6 +35,16 @@ describe('DarkForestWhitelist', function () {
     ).to.be.revertedWith('Only administrator can perform this action');
   });
 
+  it('should increase numPlayers after player is whitelisted', async function () {
+    const prevPlayers = await world.contracts.whitelist.numPlayers();
+
+    const addTx = await world.contracts.whitelist.addAndDripPlayers([world.user2.address]);
+
+    const currPlayers = await world.contracts.whitelist.numPlayers();
+
+    expect(currPlayers).to.equal(prevPlayers.add(ethers.BigNumber.from("1")));
+  })
+
   it('should confirm a whitelisted player\s balance has increased by drip amt', async function () {
     const drip = await world.contracts.whitelist.drip();
     expect(drip).to.equal(utils.parseEther('0.015'));
