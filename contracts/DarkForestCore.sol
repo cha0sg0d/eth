@@ -88,8 +88,6 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             PERLIN_LENGTH_SCALE: initArgs.PERLIN_LENGTH_SCALE
         });
         s.gameConstants = DarkForestTypes.GameConstants({
-            DESTROY_PLANETS: initArgs.DESTROY_PLANETS,
-            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD,
             MAX_NATURAL_PLANET_LEVEL: initArgs.MAX_NATURAL_PLANET_LEVEL,
             TIME_FACTOR_HUNDREDTHS: initArgs.TIME_FACTOR_HUNDREDTHS,
             PERLIN_THRESHOLD_1: initArgs.PERLIN_THRESHOLD_1,
@@ -104,7 +102,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             PHOTOID_ACTIVATION_DELAY: initArgs.PHOTOID_ACTIVATION_DELAY,
             LOCATION_REVEAL_COOLDOWN: initArgs.LOCATION_REVEAL_COOLDOWN,
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
-            ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES
+            ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
+            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD
         });
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED

@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./ABDKMath64x64.sol";
 import "./DarkForestTypes.sol";
+import "hardhat/console.sol";
 
 library DarkForestLazyUpdate {
     // the only contract that ever calls this is DarkForestCore, which has a known storage layout
@@ -127,12 +128,15 @@ library DarkForestLazyUpdate {
     function applyArrival(
         DarkForestTypes.Planet memory planet,
         DarkForestTypes.ArrivalData memory arrival
-    ) private view returns (uint256 newArtifactOnPlanet, DarkForestTypes.Planet memory) {
+    ) private view returns (DarkForestTypes.ApplyArrivalData memory) {
         // checks whether the planet is owned by the player sending ships
+        bool isDestroyed = false;
+
         if (arrival.player == planet.owner) {
             // simply increase the population if so
             planet.population = planet.population + arrival.popArriving;
         } else {
+
             if (arrival.arrivalType == DarkForestTypes.ArrivalType.Wormhole) {
                 // if this is a wormhole arrival to a planet that isn't owned by the initiator of
                 // the move, then don't move any energy
@@ -147,8 +151,19 @@ library DarkForestLazyUpdate {
                 // reduce the arriving ships amount with the current population and the
                 // result is the new population of the planet now owned by the attacking
                 // player
-                
-                // console.log(s().gameConstants.DESTROY_PLANETS);
+
+                // If moving to enemy planet, destroy if arriving energy > threshold.
+                if (planet.owner != address(0)) {
+                    uint256 threshold = s().gameConstants.DESTROY_THRESHOLD;
+                    uint256 thres_times_pop = threshold * planet.population;
+                    console.log("arr %s > curr * threshold: %s?", (arrival.popArriving * 100) / planet.defense, thres_times_pop);
+                    // If threshold = 0, no destroy.
+                    if(threshold > 0 && ((arrival.popArriving * 100) / planet.defense) > (planet.population * threshold)) {
+                        console.log("destroying");
+                        isDestroyed = true;
+                    }
+                }
+
                 planet.owner = arrival.player;
                 planet.population =
                     arrival.popArriving -
@@ -172,7 +187,7 @@ library DarkForestLazyUpdate {
         uint256 _nextSilver = planet.silver + arrival.silverMoved;
         planet.silver = _maxSilver < _nextSilver ? _maxSilver : _nextSilver;
 
-        return (arrival.carriedArtifactId, planet);
+        return DarkForestTypes.ApplyArrivalData(arrival.carriedArtifactId, planet, isDestroyed);
     }
 
     function applyPendingEvents(
@@ -248,14 +263,18 @@ library DarkForestLazyUpdate {
                 ) {
                     eventIdsToRemove[numEventsToRemove++] = events[earliestEventIndex].id;
 
-                    uint256 newArtifactId;
-                    (newArtifactId, planet) = applyArrival(
+                    DarkForestTypes.ApplyArrivalData memory arrivalData = applyArrival(
                         planet,
                         s().planetArrivals[events[earliestEventIndex].id]
                     );
 
-                    if (newArtifactId != 0) {
-                        newArtifactsOnPlanet[numNewArtifactsOnPlanet++] = newArtifactId;
+                    if(arrivalData.destroyed) {
+                        planetExtendedInfo.destroyed = true;
+                        break;
+                    }
+
+                    if (arrivalData.newArtifactId != 0) {
+                        newArtifactsOnPlanet[numNewArtifactsOnPlanet++] = arrivalData.newArtifactId;
                     }
                 }
             }

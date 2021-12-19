@@ -12,6 +12,7 @@ export const initializers = settings.parse(settings.Initializers, {
   WORLD_RADIUS_LOCKED: true,
   INITIAL_WORLD_RADIUS: 304514,
   SPAWN_RIM_AREA: 7234560000,
+  DESTROY_THRESHOLD: 2,
 });
 
 // This builds a fake HRE-like object used to initialize the test contracts
