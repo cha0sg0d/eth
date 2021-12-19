@@ -127,7 +127,7 @@ library DarkForestLazyUpdate {
     function applyArrival(
         DarkForestTypes.Planet memory planet,
         DarkForestTypes.ArrivalData memory arrival
-    ) private pure returns (uint256 newArtifactOnPlanet, DarkForestTypes.Planet memory) {
+    ) private view returns (uint256 newArtifactOnPlanet, DarkForestTypes.Planet memory) {
         // checks whether the planet is owned by the player sending ships
         if (arrival.player == planet.owner) {
             // simply increase the population if so
@@ -147,6 +147,8 @@ library DarkForestLazyUpdate {
                 // reduce the arriving ships amount with the current population and the
                 // result is the new population of the planet now owned by the attacking
                 // player
+                
+                // console.log(s().gameConstants.DESTROY_PLANETS);
                 planet.owner = arrival.player;
                 planet.population =
                     arrival.popArriving -

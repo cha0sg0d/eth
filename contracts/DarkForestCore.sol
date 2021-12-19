@@ -88,6 +88,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             PERLIN_LENGTH_SCALE: initArgs.PERLIN_LENGTH_SCALE
         });
         s.gameConstants = DarkForestTypes.GameConstants({
+            DESTROY_PLANETS: initArgs.DESTROY_PLANETS,
+            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD,
             MAX_NATURAL_PLANET_LEVEL: initArgs.MAX_NATURAL_PLANET_LEVEL,
             TIME_FACTOR_HUNDREDTHS: initArgs.TIME_FACTOR_HUNDREDTHS,
             PERLIN_THRESHOLD_1: initArgs.PERLIN_THRESHOLD_1,

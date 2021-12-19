@@ -95,6 +95,8 @@ library DarkForestTypes {
     // Game config
     // This struct is ~1 properties from maximum struct size
     struct GameConstants {
+        bool DESTROY_PLANETS;
+        uint256 DESTROY_THRESHOLD;
         uint256 MAX_NATURAL_PLANET_LEVEL;
         uint256 TIME_FACTOR_HUNDREDTHS; // speedup/slowdown game
         uint256 PERLIN_THRESHOLD_1;
@@ -128,6 +130,8 @@ library DarkForestTypes {
         bool PERLIN_MIRROR_Y;
         uint256 PERLIN_LENGTH_SCALE; // must be a power of two up to 8192
         // Game config
+        bool DESTROY_PLANETS;
+        uint256 DESTROY_THRESHOLD;
         uint256 MAX_NATURAL_PLANET_LEVEL;
         uint256 TIME_FACTOR_HUNDREDTHS; // speedup/slowdown game
         uint256 PERLIN_THRESHOLD_1;
