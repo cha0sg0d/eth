@@ -159,8 +159,8 @@ library DarkForestLazyUpdate {
                     console.log("arr %s > curr * threshold: %s?", (arrival.popArriving * 100) / planet.defense, thres_times_pop);
                     // If threshold = 0, no destroy.
                     if(threshold > 0 && ((arrival.popArriving * 100) / planet.defense) > (planet.population * threshold)) {
-                        console.log("destroying");
                         isDestroyed = true;
+                        // emit PlanetDestroyed(planet.locatinId)
                     }
                 }
 
