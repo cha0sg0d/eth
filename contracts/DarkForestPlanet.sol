@@ -392,11 +392,12 @@ library DarkForestPlanet {
             DarkForestUtils.getActiveArtifact(args.oldLoc);
         DarkForestTypes.Artifact memory activeArtifactTo =
             DarkForestUtils.getActiveArtifact(args.newLoc);
-        require(
-            !s().planetsExtendedInfo[args.newLoc].destroyed &&
-                !s().planetsExtendedInfo[args.oldLoc].destroyed,
-            "planet is destroyed"
-        );
+        
+        // Do nothing if planet is destroyed
+        if(s().planetsExtendedInfo[args.newLoc].destroyed || s().planetsExtendedInfo[args.oldLoc].destroyed) {
+            return;
+        }
+
         require(
             s().planets[args.oldLoc].owner == msg.sender,
             "Only owner account can perform operation on planets"
