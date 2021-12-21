@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 import "./ABDKMath64x64.sol";
 import "./DarkForestTypes.sol";
 import "./DarkForestTokens.sol";
+import "hardhat/console.sol";
 
 library DarkForestUtils {
     // the only contract that ever calls this is DarkForestCore, which has a known storage layout
@@ -141,17 +142,52 @@ library DarkForestUtils {
     }
 
     function _getRadius() public view returns (uint256) {
-        uint256 nPlayers = s().playerIds.length;
-        uint256 target4RadiusConstant = s().TARGET4_RADIUS;
-        uint256 target4 = s().initializedPlanetCountByLevel[4] + 20 * nPlayers;
-        if (target4 < target4RadiusConstant) {
-            target4 = target4RadiusConstant;
-        }
-        uint256 targetRadiusSquared4 = (target4 * s().cumulativeRarities[4] * 100) / 314;
-        uint256 r4 =
-            ABDKMath64x64.toUInt(ABDKMath64x64.sqrt(ABDKMath64x64.fromUInt(targetRadiusSquared4)));
-        return r4;
+        console.log("curr radius", s().worldRadius);
+        uint256 radius = s().worldRadius;
+        uint256 shrinkAccelerator = 2;
+        uint256 totalTime = 600;
+        uint256 timeElapsed = block.timestamp - s().gameConstants.START_TIME;
+        if(timeElapsed > totalTime) timeElapsed = totalTime;
+        console.log("timeElapsed: %s", timeElapsed);
+        console.log("totalTime: %s", totalTime);
+        // only shrink after initial time elapsed.
+        radius = (
+            s().worldRadius * 
+                (
+                    (totalTime**shrinkAccelerator) - 
+                (
+                    timeElapsed**shrinkAccelerator
+                    ))
+            ) 
+            / totalTime**shrinkAccelerator;
+
+        console.log("radius: %s", radius);
+        if (radius < 0) radius = 0;
+        // set Max universe to be appropriate for 1000.
+
+        // Total time - 600 seconds
+        // End timestamp
+
+        
+
+        return radius;
+
+        // TODO: explore big bang.
+        // Can you still withdraw from outside the universe?
     }
+
+    // function _getRadius() public view returns (uint256) {
+    //     uint256 nPlayers = s().playerIds.length;
+    //     uint256 target4RadiusConstant = s().TARGET4_RADIUS;
+    //     uint256 target4 = s().initializedPlanetCountByLevel[4] + 20 * nPlayers;
+    //     if (target4 < target4RadiusConstant) {
+    //         target4 = target4RadiusConstant;
+    //     }
+    //     uint256 targetRadiusSquared4 = (target4 * s().cumulativeRarities[4] * 100) / 314;
+    //     uint256 r4 =
+    //         ABDKMath64x64.toUInt(ABDKMath64x64.sqrt(ABDKMath64x64.fromUInt(targetRadiusSquared4)));
+    //     return r4;
+    // }
 
     function _randomArtifactTypeAndLevelBonus(
         uint256 artifactSeed,

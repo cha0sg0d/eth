@@ -111,6 +111,7 @@ library DarkForestTypes {
         uint8[5][10][4] PLANET_TYPE_WEIGHTS; // spaceType (enum 0-3) -> planetLevel (0-7) -> planetType (enum 0-4)
         uint256[6] ARTIFACT_POINT_VALUES;
         uint256 DESTROY_THRESHOLD;
+        uint256 START_TIME;
     }
 
     struct DFInitArgs {
