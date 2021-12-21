@@ -59,6 +59,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         address payable _tokensAddress,
         DarkForestTypes.DFInitArgs memory initArgs
     ) public initializer {
+
+        // s.startTime = block.timestamp;
         s.adminAddress = _adminAddress;
         s.whitelist = Whitelist(_whitelistAddress);
         s.tokens = DarkForestTokens(_tokensAddress);
@@ -103,7 +105,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             LOCATION_REVEAL_COOLDOWN: initArgs.LOCATION_REVEAL_COOLDOWN,
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
             ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
-            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD
+            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD,
+            START_TIME: block.timestamp
         });
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
@@ -159,6 +162,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     //////////////
     /// Helper ///
     //////////////
+    function getRadius() public returns (uint256) {
+        return s.worldRadius = DarkForestUtils._getRadius();
+    }
 
     // Private helpers that modify state
     function _updateWorldRadius() private {
@@ -184,15 +190,15 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.adminAddress = _newAdmin;
     }
 
-    function pause() public onlyAdmin {
-        require(!s.paused, "Game is already paused");
-        s.paused = true;
-    }
+    // function pause() public onlyAdmin {
+    //     require(!s.paused, "Game is already paused");
+    //     s.paused = true;
+    // }
 
-    function unpause() public onlyAdmin {
-        require(s.paused, "Game is already unpaused");
-        s.paused = false;
-    }
+    // function unpause() public onlyAdmin {
+    //     require(s.paused, "Game is already unpaused");
+    //     s.paused = false;
+    // }
 
     function setOwner(uint256 planetId, address newOwner) public onlyAdmin {
         s.planets[planetId].owner = newOwner;
