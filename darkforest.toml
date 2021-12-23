@@ -5,13 +5,13 @@
 ADMIN_CAN_ADD_PLANETS = true
 WORLD_RADIUS_LOCKED = false # if true will keep universe radius at INITIAL_WORLD_RADIUS
 TOKEN_MINT_END_TIMESTAMP = 2021-10-05T04:00:00.000Z # Mon Oct 04 2021 21:00:00 GMT-0700 (Pacific Daylight Time)
-TARGET4_RADIUS = 10000 # 
-INITIAL_WORLD_RADIUS = 10000 # Cray!
+TARGET4_RADIUS = 8000 # 
+INITIAL_WORLD_RADIUS = 8000 # Cray!
 
 ##################################
 # SNARK keys & Perlin parameters #
 ##################################
-DISABLE_ZK_CHECKS = true
+DISABLE_ZK_CHECKS = false
 PLANETHASH_KEY = 6278
 SPACETYPE_KEY = 6279
 BIOMEBASE_KEY = 6270

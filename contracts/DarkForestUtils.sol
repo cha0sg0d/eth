@@ -145,7 +145,8 @@ library DarkForestUtils {
         console.log("curr radius", s().worldRadius);
         uint256 radius = s().worldRadius;
         uint256 shrinkAccelerator = 2;
-        uint256 totalTime = 600;
+        uint256 totalTime = 300;
+        uint256 minRadius = 1000;
         uint256 timeElapsed = block.timestamp - s().gameConstants.START_TIME;
         if(timeElapsed > totalTime) timeElapsed = totalTime;
         console.log("timeElapsed: %s", timeElapsed);
@@ -155,14 +156,13 @@ library DarkForestUtils {
             s().worldRadius * 
                 (
                     (totalTime**shrinkAccelerator) - 
-                (
-                    timeElapsed**shrinkAccelerator
-                    ))
+                    (timeElapsed**shrinkAccelerator)
+                )
             ) 
             / totalTime**shrinkAccelerator;
 
         console.log("radius: %s", radius);
-        if (radius < 0) radius = 0;
+        if (radius < minRadius) radius = minRadius;
         // set Max universe to be appropriate for 1000.
 
         // Total time - 600 seconds

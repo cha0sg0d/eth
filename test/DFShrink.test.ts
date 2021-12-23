@@ -27,26 +27,29 @@ const { BigNumber: BN } = ethers;
 describe('DarkForestMove', function () {
   let world: World;
 
-  describe('in a growing universe', async function () {
+  describe('in a shrinking universe', async function () {
     let initialRadius: BigNumber;
 
-    before(async function () {
+    beforeEach(async function () {
       world = await fixtureLoader(growingWorldFixture);
-      initialRadius = await world.contracts.core.worldRadius();
-      const initArgs = makeInitArgs(SPAWN_PLANET_2, initialRadius.toNumber());
-
-      await world.user1Core.initializePlayer(...initArgs);
+        
+      await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1));
+      await world.user2Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_2));
       await increaseBlockchainTime();
     });
 
-    it('should log start time', async function () {
+    it('should decrease in radius size over time', async function () {
       const gameConstants = await world.user1Core.gameConstants()
       console.log("start time:", gameConstants.START_TIME.toNumber())
       const initRadius = await world.contracts.core.worldRadius();
       await increaseBlockchainTime(5);
-      const currRadius = await world.contracts.core.getRadius()
-      // console.log("initRadius: ", initRadius, "radius", currRadius);
 
+      await world.user1Core.move(
+        ...makeMoveArgs(SPAWN_PLANET_1, SPAWN_PLANET_2, 0, 40000, 0)
+      ); 
+
+      const currRadius = await world.contracts.core.worldRadius();
+      expect(currRadius.toNumber()).lessThan(initRadius.toNumber());
       // expect(gameConstants.START_TIME.toNumber()).to.equal(2);
       // console.log
       // console.log(await world.contracts.core.getRadius());

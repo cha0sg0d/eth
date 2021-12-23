@@ -10,7 +10,7 @@ export const initializers = settings.parse(settings.Initializers, {
   ADMIN_CAN_ADD_PLANETS: true,
   TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
   WORLD_RADIUS_LOCKED: true,
-  INITIAL_WORLD_RADIUS: 304514,
+  // INITIAL_WORLD_RADIUS: 304514,
   SPAWN_RIM_AREA: 7234560000,
   DESTROY_THRESHOLD: 2,
 });
@@ -22,8 +22,8 @@ export const target4Initializers = settings.parse(settings.Initializers, {
   SPACETYPE_KEY: 2,
   BIOMEBASE_KEY: 3,
   TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
-  TARGET4_RADIUS: 1,
-  SPAWN_RIM_AREA: 7234560000,
+  // TARGET4_RADIUS: 1,
+  // SPAWN_RIM_AREA: 7234560000,
 });
 
 export const VALID_INIT_PERLIN = initializers.INIT_PERLIN_MIN;

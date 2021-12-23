@@ -95,7 +95,7 @@ export function makeInitArgs(
     [
       planetLoc.id,
       planetLoc.perlin,
-      spawnRadius,
+      planetLoc.distFromOrigin,
       PLANETHASH_KEY,
       SPACETYPE_KEY,
       PERLIN_LENGTH_SCALE,

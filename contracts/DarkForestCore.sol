@@ -115,6 +115,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.TOKEN_MINT_END_TIMESTAMP = initArgs.TOKEN_MINT_END_TIMESTAMP;
         s.TARGET4_RADIUS = initArgs.TARGET4_RADIUS;
 
+        console.log("world Radius at init: %s", s.worldRadius);
+
         DarkForestInitialize.initializeDefaults();
         DarkForestInitialize.initializeUpgrades();
 
@@ -162,9 +164,6 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     //////////////
     /// Helper ///
     //////////////
-    function getRadius() public returns (uint256) {
-        return s.worldRadius = DarkForestUtils._getRadius();
-    }
 
     // Private helpers that modify state
     function _updateWorldRadius() private {
@@ -329,6 +328,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             false
         );
 
+        console.log("player radius: %s", _radius);
         require(DarkForestPlanet.checkPlayerInit(_location, _perlin, _radius));
         // Initialize player data
         s.playerIds.push(msg.sender);
