@@ -75,7 +75,7 @@ describe('move to enemy planet', function () {
 
   it('should find destroy threshold', async function () {
     await increaseBlockchainTime();
-    //TODO: Set Destroy Threshold
+    // TODO Set Destroy Threshold
 
     const gameConstants = await world.user1Core.gameConstants()
     expect(gameConstants.DESTROY_THRESHOLD.toNumber()).to.equal(2);
@@ -99,10 +99,11 @@ describe('move to enemy planet', function () {
     const planet2Def = planet2.defense.toNumber();
     const defenseForce = Math.floor((planet2Pop * planet2Def) / 100);
 
+    // Make the destroy move. Will be applied next time someone moves to planet.
     await world.user1Core.move(
-      ...makeMoveArgs(SPAWN_PLANET_1, SPAWN_PLANET_2, dist, 70000, silverSent)
-    );
-  
+    ...makeMoveArgs(SPAWN_PLANET_1, SPAWN_PLANET_2, dist, 70000, silverSent)
+    )
+
     await world.contracts.core.refreshPlanet(planet2Id);
     const planet2Ext = await world.contracts.core.planetsExtendedInfo(planet2Id);
     expect(planet2Ext.destroyed).to.equal(true);
@@ -111,6 +112,9 @@ describe('move to enemy planet', function () {
       world.user1Core.move(
         ...makeMoveArgs(SPAWN_PLANET_1, SPAWN_PLANET_2, dist, 70000, silverSent)
       )
-    ).to.be.revertedWith('planet is destroyed');
+    )
+    .to.emit(world.user1Core, "PlanetDestroyed")
+    .withArgs(world.user1.address, SPAWN_PLANET_2.id);
+    
   });
 });

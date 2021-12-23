@@ -48,8 +48,11 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     event ArtifactWithdrawn(address player, uint256 artifactId, uint256 loc);
     event ArtifactActivated(address player, uint256 artifactId, uint256 loc); // emitted in DFPlanet library
     event ArtifactDeactivated(address player, uint256 artifactId, uint256 loc); // emitted in DFPlanet library
+    event PlanetDestroyed(address player, uint256 loc); // emitted in DFPlanet library
+
 
     event PlanetSilverWithdrawn(address player, uint256 loc, uint256 amount);
+    
 
     // initialization functions are only called once during deployment. They are not called during upgrades.
 
@@ -254,6 +257,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function refreshPlanet(uint256 location) public notPaused {
         DarkForestPlanet.refreshPlanet(location);
+
     }
 
     function getRefreshedPlanet(uint256 location, uint256 timestamp)

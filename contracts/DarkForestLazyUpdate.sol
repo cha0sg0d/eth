@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "./ABDKMath64x64.sol";
 import "./DarkForestTypes.sol";
-import "hardhat/console.sol";
 
 library DarkForestLazyUpdate {
     // the only contract that ever calls this is DarkForestCore, which has a known storage layout
