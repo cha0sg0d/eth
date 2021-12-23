@@ -155,7 +155,6 @@ library DarkForestLazyUpdate {
                 if (planet.owner != address(0)) {
                     uint256 threshold = s().gameConstants.DESTROY_THRESHOLD;
                     uint256 thres_times_pop = threshold * planet.population;
-                    console.log("arr %s > curr * threshold: %s?", (arrival.popArriving * 100) / planet.defense, thres_times_pop);
                     // If threshold = 0, no destroy.
                     if(threshold > 0 && ((arrival.popArriving * 100) / planet.defense) > (planet.population * threshold)) {
                         isDestroyed = true;
