@@ -105,7 +105,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             LOCATION_REVEAL_COOLDOWN: initArgs.LOCATION_REVEAL_COOLDOWN,
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
             ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
-            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD,
+            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD
         });
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
