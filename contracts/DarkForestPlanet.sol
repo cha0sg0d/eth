@@ -540,7 +540,10 @@ library DarkForestPlanet {
         s().planets[location] = planet;
         s().planetsExtendedInfo[location] = planetInfo;
 
-        if(planetInfo.destroyed) {
+        DarkForestTypes.PlanetExtendedInfo memory prevPlanet = s().planetsExtendedInfo[location];
+
+        // Only emit PlanetDestroyed when actual destruction occurred.
+        if(planetInfo.destroyed && !prevPlanet.destroyed) {
             emit PlanetDestroyed(planet.owner, location);
         }
 
