@@ -34,8 +34,8 @@ describe('DarkForestMove', function () {
       world = await fixtureLoader(growingWorldFixture);
         
       await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1));
-      await world.user2Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_2));
-      await increaseBlockchainTime();
+      // await world.user2Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_2));
+      // await increaseBlockchainTime();
     });
 
     it('should decrease in radius size over time', async function () {

@@ -85,6 +85,7 @@ export function makeInitArgs(
     BigNumberish
   ]
 ] {
+  console.log("initArgs", planetLoc, spawnRadius);
   return [
     [BN_ZERO, BN_ZERO],
     [
