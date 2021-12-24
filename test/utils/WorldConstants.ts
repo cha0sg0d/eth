@@ -22,8 +22,22 @@ export const target4Initializers = settings.parse(settings.Initializers, {
   SPACETYPE_KEY: 2,
   BIOMEBASE_KEY: 3,
   TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
-  // TARGET4_RADIUS: 1,
-  // SPAWN_RIM_AREA: 7234560000,
+  TARGET4_RADIUS: 1,
+  SPAWN_RIM_AREA: 7234560000,
+});
+
+export const shrinkingInitializers = settings.parse(settings.Initializers, {
+  DISABLE_ZK_CHECKS: true,
+  PLANETHASH_KEY: 1,
+  SPACETYPE_KEY: 2,
+  BIOMEBASE_KEY: 3,
+  INITIAL_WORLD_RADIUS: 2500,
+  TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
+  START_TIME: Math.floor(Date.now() / 1000),
+  END_TIME: Math.floor(Date.now() / 1000) + 300,
+  MIN_RADIUS: 2000,
+  SHRINK_FACTOR: 2,
+  SHRINK: true,
 });
 
 export const VALID_INIT_PERLIN = initializers.INIT_PERLIN_MIN;
@@ -102,6 +116,14 @@ export const LVL1_PLANET_SPACE = new TestLocation({
   hex: '000057c13def522bffa2fee2eeb9ce2cc04b5f5176538cbfe524d8f6b00a827e',
   perlin: SPACE_PERLIN,
   distFromOrigin: 1998,
+});
+
+export const LVL1_PLANET_SPACE_FURTHER = new TestLocation({
+  // no special props
+  // lvl1, space
+  hex: '000057c13def522bffa2fee2eeb9ce2cc04b5f5176538cbfe524d8f6b00a827e',
+  perlin: SPACE_PERLIN,
+  distFromOrigin: 2005,
 });
 
 export const LVL1_PLANET_DEEP_SPACE = new TestLocation({
