@@ -109,6 +109,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             START_TIME: initArgs.START_TIME,
             END_TIME: initArgs.END_TIME,
             MIN_RADIUS: initArgs.MIN_RADIUS,
+            SHRINK_FACTOR: initArgs.SHRINK_FACTOR,
             SHRINK: initArgs.SHRINK
         });
 
@@ -331,7 +332,6 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             false
         );
 
-        console.log("player radius: %s", _radius);
         require(DarkForestPlanet.checkPlayerInit(_location, _perlin, _radius));
         // Initialize player data
         s.playerIds.push(msg.sender);

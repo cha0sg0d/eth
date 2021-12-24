@@ -114,6 +114,7 @@ library DarkForestTypes {
         uint256 START_TIME;
         uint256 END_TIME;
         uint256 MIN_RADIUS;
+        uint256 SHRINK_FACTOR;
         bool SHRINK;
     }
 
@@ -151,6 +152,7 @@ library DarkForestTypes {
         uint256 START_TIME;
         uint256 END_TIME;
         uint256 MIN_RADIUS;
+        uint256 SHRINK_FACTOR;
         bool SHRINK;
     }
 
