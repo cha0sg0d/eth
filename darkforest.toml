@@ -22,6 +22,10 @@ PERLIN_LENGTH_SCALE = 16384 # must be a power of two no greater than 16384
 ######################
 # Game configuration #
 ######################
+# NOTE that START TIME and END TIME will be set in `settings.ts` as the default.
+MIN_RADIUS = 2000
+SHRINK_FACTOR = 2
+SHRINK = true
 DESTROY_THRESHOLD = 2 # must be an integer, default is 0.   
 MAX_NATURAL_PLANET_LEVEL = 256
 TIME_FACTOR_HUNDREDTHS = 2000 # speedup/slowdown game

@@ -81,6 +81,11 @@ export const Initializers = decoders.guard(
     /**
      * Game configuration
      */
+    START_TIME: withDefault(decoders.number, Math.floor(Date.now() / 1000)),
+    END_TIME: withDefault(decoders.number, Math.floor(Date.now() / 1000) + 300), // 5 minute round is default
+    MIN_RADIUS: withDefault(decoders.number, 500),
+    SHRINK_FACTOR: withDefault(decoders.number, 2),
+    SHRINK: withDefault(decoders.boolean, false),
     DESTROY_THRESHOLD: withDefault(decoders.number, 0),
     MAX_NATURAL_PLANET_LEVEL: withDefault(decoders.number, 256),
     TIME_FACTOR_HUNDREDTHS: withDefault(decoders.number, 100),
