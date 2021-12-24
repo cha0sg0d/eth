@@ -106,7 +106,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
             ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
             DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD,
-            START_TIME: block.timestamp
+            START_TIME: initArgs.START_TIME,
+            END_TIME: initArgs.END_TIME,
+            MIN_RADIUS: initArgs.MIN_RADIUS,
+            SHRINK: initArgs.SHRINK
         });
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
@@ -454,23 +457,6 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.planets[_location].owner = _player;
 
         emit PlanetTransferred(msg.sender, _location, _player);
-    }
-
-    function buyHat(uint256 _location) public payable {
-        require(
-            s.planetsExtendedInfo[_location].isInitialized == true,
-            "Planet is not initialized"
-        );
-        refreshPlanet(_location);
-
-        require(s.planets[_location].owner == msg.sender, "Only owner can buy hat for planet");
-
-        uint256 cost = (1 << s.planetsExtendedInfo[_location].hatLevel) * 1 ether;
-
-        require(msg.value == cost, "Wrong value sent");
-
-        s.planetsExtendedInfo[_location].hatLevel += 1;
-        emit PlanetHatBought(msg.sender, _location, s.planetsExtendedInfo[_location].hatLevel);
     }
 
     function findArtifact(
