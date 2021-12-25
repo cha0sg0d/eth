@@ -122,8 +122,6 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.TOKEN_MINT_END_TIMESTAMP = initArgs.TOKEN_MINT_END_TIMESTAMP;
         s.TARGET4_RADIUS = initArgs.TARGET4_RADIUS;
 
-        console.log("world Radius at init: %s", s.worldRadius);
-
         DarkForestInitialize.initializeDefaults();
         DarkForestInitialize.initializeUpgrades();
 
@@ -221,6 +219,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function changeLocationRevealCooldown(uint256 newCooldown) public onlyAdmin {
         s.gameConstants.LOCATION_REVEAL_COOLDOWN = newCooldown;
+    }
+
+    function changeDestroyThreshold(uint256 newThreshold) public onlyAdmin {
+        s.gameConstants.DESTROY_THRESHOLD = newThreshold;
     }
 
     function withdraw() public onlyAdmin {
