@@ -110,6 +110,7 @@ library DarkForestTypes {
         uint256 LOCATION_REVEAL_COOLDOWN;
         uint8[5][10][4] PLANET_TYPE_WEIGHTS; // spaceType (enum 0-3) -> planetLevel (0-7) -> planetType (enum 0-4)
         uint256[6] ARTIFACT_POINT_VALUES;
+        uint256 DESTROY_THRESHOLD;
     }
 
     struct DFInitArgs {
@@ -128,6 +129,7 @@ library DarkForestTypes {
         bool PERLIN_MIRROR_Y;
         uint256 PERLIN_LENGTH_SCALE; // must be a power of two up to 8192
         // Game config
+        uint256 DESTROY_THRESHOLD;
         uint256 MAX_NATURAL_PLANET_LEVEL;
         uint256 TIME_FACTOR_HUNDREDTHS; // speedup/slowdown game
         uint256 PERLIN_THRESHOLD_1;
@@ -203,6 +205,12 @@ library DarkForestTypes {
         ArrivalType arrivalType;
         uint256 carriedArtifactId;
         uint256 distance;
+    }
+
+    struct ApplyArrivalData {
+        uint256 newArtifactId;
+        Planet planet;
+        bool destroyed;
     }
 
     struct PlanetDefaultStats {

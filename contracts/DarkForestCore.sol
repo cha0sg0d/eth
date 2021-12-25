@@ -48,8 +48,11 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     event ArtifactWithdrawn(address player, uint256 artifactId, uint256 loc);
     event ArtifactActivated(address player, uint256 artifactId, uint256 loc); // emitted in DFPlanet library
     event ArtifactDeactivated(address player, uint256 artifactId, uint256 loc); // emitted in DFPlanet library
+    event PlanetDestroyed(address player, uint256 loc); // emitted in DFPlanet library
+
 
     event PlanetSilverWithdrawn(address player, uint256 loc, uint256 amount);
+    
 
     // initialization functions are only called once during deployment. They are not called during upgrades.
 
@@ -59,6 +62,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         address payable _tokensAddress,
         DarkForestTypes.DFInitArgs memory initArgs
     ) public initializer {
+
+        // s.startTime = block.timestamp;
         s.adminAddress = _adminAddress;
         s.whitelist = Whitelist(_whitelistAddress);
         s.tokens = DarkForestTokens(_tokensAddress);
@@ -102,7 +107,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             PHOTOID_ACTIVATION_DELAY: initArgs.PHOTOID_ACTIVATION_DELAY,
             LOCATION_REVEAL_COOLDOWN: initArgs.LOCATION_REVEAL_COOLDOWN,
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
-            ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES
+            ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
+            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD
         });
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
@@ -158,6 +164,9 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     //////////////
     /// Helper ///
     //////////////
+    function getRadius() public returns (uint256) {
+        return s.worldRadius = DarkForestUtils._getRadius();
+    }
 
     // Private helpers that modify state
     function _updateWorldRadius() private {
@@ -183,15 +192,15 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.adminAddress = _newAdmin;
     }
 
-    function pause() public onlyAdmin {
-        require(!s.paused, "Game is already paused");
-        s.paused = true;
-    }
+    // function pause() public onlyAdmin {
+    //     require(!s.paused, "Game is already paused");
+    //     s.paused = true;
+    // }
 
-    function unpause() public onlyAdmin {
-        require(s.paused, "Game is already unpaused");
-        s.paused = false;
-    }
+    // function unpause() public onlyAdmin {
+    //     require(s.paused, "Game is already unpaused");
+    //     s.paused = false;
+    // }
 
     function setOwner(uint256 planetId, address newOwner) public onlyAdmin {
         s.planets[planetId].owner = newOwner;
@@ -248,6 +257,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function refreshPlanet(uint256 location) public notPaused {
         DarkForestPlanet.refreshPlanet(location);
+
     }
 
     function getRefreshedPlanet(uint256 location, uint256 timestamp)
