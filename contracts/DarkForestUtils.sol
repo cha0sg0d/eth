@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 import "./ABDKMath64x64.sol";
 import "./DarkForestTypes.sol";
 import "./DarkForestTokens.sol";
+import "hardhat/console.sol";
 
 library DarkForestUtils {
     // the only contract that ever calls this is DarkForestCore, which has a known storage layout
@@ -150,6 +151,7 @@ library DarkForestUtils {
     
     function _shrinkRadius() public view returns (uint256) {
         uint256 radius = s().worldRadius;
+        console.log("curr radius is %s", radius);
         uint256 shrinkFactor = s().gameConstants.SHRINK_FACTOR;
         uint256 totalTime = s().gameConstants.END_TIME - s().gameConstants.START_TIME;
         // Only shrink after START_TIME has occurred. Allows for delaying of shrinking.
@@ -170,6 +172,7 @@ library DarkForestUtils {
 
         // set minimum
         if (radius < minRadius) radius = minRadius;
+        console.log("shrunk radius is %s", radius);
         return radius;
     }
 
