@@ -6,6 +6,7 @@ import "./DarkForestTokens.sol";
 import "./DarkForestLazyUpdate.sol";
 import "./DarkForestUtils.sol";
 import "./DarkForestArtifactUtils.sol";
+import "hardhat/console.sol";
 
 library DarkForestPlanet {
     // the only contract that ever calls this is DarkForestCore, which has a known storage layout
@@ -366,8 +367,20 @@ library DarkForestPlanet {
         uint256 _perlin,
         uint256 _radius
     ) public view returns (bool) {
+        console.log("player planet radius %s vs world radius %s", _radius, s().worldRadius);
+
         require(!s().players[msg.sender].isInitialized, "Player is already initialized");
         require(_radius <= s().worldRadius, "Init radius is bigger than the current world radius");
+        
+        // this will only allow players to initialize in the middle ring of the universe. 
+        if(s().gameConstants.SHRINK) {
+            uint256 radius = s().worldRadius;
+            uint256 upperQuartile = (radius * 75) / 100;
+            uint256 lowerQuartile = (radius * 25) / 100;
+            console.log("lowerQuartile %s upperQuartile %s player radius %s", lowerQuartile, upperQuartile, _radius);
+            require(_radius >= lowerQuartile, "Init radius is too low");
+            require(_radius <= upperQuartile, "Init radius is too high");
+        }
 
         if (s().gameConstants.SPAWN_RIM_AREA != 0) {
             require(
