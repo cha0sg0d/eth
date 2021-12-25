@@ -28,12 +28,13 @@ SHRINK_FACTOR = 2
 SHRINK = true
 DESTROY_THRESHOLD = 2 # must be an integer, default is 0.   
 MAX_NATURAL_PLANET_LEVEL = 256
-TIME_FACTOR_HUNDREDTHS = 2000 # speedup/slowdown game
+TIME_FACTOR_HUNDREDTHS = 6000 # speedup/slowdown game
 PERLIN_THRESHOLD_1 = 14
 PERLIN_THRESHOLD_2 = 15
 PERLIN_THRESHOLD_3 = 19
 INIT_PERLIN_MIN = 1 # determines where players can spawn
 INIT_PERLIN_MAX = 25 # determines where players can spawn
+=======
 SPAWN_RIM_AREA = 0
 BIOME_THRESHOLD_1 = 15
 BIOME_THRESHOLD_2 = 17

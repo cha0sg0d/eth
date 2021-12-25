@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "./ABDKMath64x64.sol";
 import "./DarkForestTypes.sol";
-import "hardhat/console.sol";
 
 library DarkForestLazyUpdate {
     // the only contract that ever calls this is DarkForestCore, which has a known storage layout
@@ -153,14 +152,12 @@ library DarkForestLazyUpdate {
                 // player
 
                 // If moving to enemy planet, destroy if arriving energy > threshold.
-                if (planet.owner != address(0)) {
-                    uint256 threshold = s().gameConstants.DESTROY_THRESHOLD;
-                    uint256 thres_times_pop = threshold * planet.population;
-                    console.log("arr %s > curr * threshold: %s?", (arrival.popArriving * 100) / planet.defense, thres_times_pop);
-                    // If threshold = 0, no destroy.
-                    if(threshold > 0 && ((arrival.popArriving * 100) / planet.defense) > (planet.population * threshold)) {
+                // If threshold = 0, no destroy.
+                uint256 threshold = s().gameConstants.DESTROY_THRESHOLD;
+                if (planet.owner != address(0) && threshold > 0) {
+                    
+                    if(((arrival.popArriving * 100) / planet.defense) > (planet.population * threshold)) {
                         isDestroyed = true;
-                        // emit PlanetDestroyed(planet.locatinId)
                     }
                 }
 
@@ -268,13 +265,13 @@ library DarkForestLazyUpdate {
                         s().planetArrivals[events[earliestEventIndex].id]
                     );
 
+                    if (arrivalData.newArtifactId != 0) {
+                        newArtifactsOnPlanet[numNewArtifactsOnPlanet++] = arrivalData.newArtifactId;
+                    }
+                    
                     if(arrivalData.destroyed) {
                         planetExtendedInfo.destroyed = true;
                         break;
-                    }
-
-                    if (arrivalData.newArtifactId != 0) {
-                        newArtifactsOnPlanet[numNewArtifactsOnPlanet++] = arrivalData.newArtifactId;
                     }
                 }
             }

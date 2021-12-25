@@ -26,6 +26,7 @@ library DarkForestPlanet {
     event ArtifactActivated(address player, uint256 artifactId, uint256 loc);
     event ArtifactDeactivated(address player, uint256 artifactId, uint256 loc);
     event PlanetUpgraded(address player, uint256 loc, uint256 branch, uint256 toBranchLevel);
+    event PlanetDestroyed(address player, uint256 loc);
 
     function isPopCapBoost(uint256 _location) public pure returns (bool) {
         bytes memory _b = abi.encodePacked(_location);
@@ -516,7 +517,7 @@ library DarkForestPlanet {
 
         (planet, planetExtendedInfo, eventsToRemove, artifactsToAdd) = DarkForestLazyUpdate
             .applyPendingEvents(timestamp, planet, planetExtendedInfo, events);
-
+        
         (planet, planetExtendedInfo) = DarkForestLazyUpdate.updatePlanet(
             timestamp,
             planet,
@@ -538,6 +539,13 @@ library DarkForestPlanet {
 
         s().planets[location] = planet;
         s().planetsExtendedInfo[location] = planetInfo;
+
+        DarkForestTypes.PlanetExtendedInfo memory prevPlanet = s().planetsExtendedInfo[location];
+
+        // Only emit PlanetDestroyed when actual destruction occurred.
+        if(planetInfo.destroyed && !prevPlanet.destroyed) {
+            emit PlanetDestroyed(planet.owner, location);
+        }
 
         DarkForestTypes.PlanetEventMetadata[] storage events = s().planetEvents[location];
 

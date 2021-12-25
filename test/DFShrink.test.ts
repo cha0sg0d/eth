@@ -39,7 +39,6 @@ describe('DarkForestMove', function () {
     });
 
     it('should decrease in radius size over time', async function () {
-      const gameConstants = await world.user1Core.gameConstants()
       const initRadius = await world.contracts.core.worldRadius();
       await increaseBlockchainTime(5);
 
@@ -53,7 +52,7 @@ describe('DarkForestMove', function () {
     });
 
   });
-
+  
   describe('in a shrinking universe : sequential', async function () {
     let initialRadius: BigNumber;
 
@@ -94,8 +93,6 @@ describe('DarkForestMove', function () {
     });
 
   });
-
-
 });
 
 
