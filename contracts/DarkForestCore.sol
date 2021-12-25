@@ -9,6 +9,7 @@ import "./DarkForestUtils.sol";
 import "./DarkForestPlanet.sol";
 import "./DarkForestInitialize.sol";
 import "./DarkForestArtifactUtils.sol";
+import "hardhat/console.sol";
 
 // .______       _______     ___       _______  .___  ___.  _______
 // |   _  \     |   ____|   /   \     |       \ |   \/   | |   ____|
@@ -116,6 +117,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             SHRINK: initArgs.SHRINK
         });
 
+        console.log("START_TIME %s", s.gameConstants.START_TIME);
+
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
         s.ADMIN_CAN_ADD_PLANETS = initArgs.ADMIN_CAN_ADD_PLANETS;
         s.WORLD_RADIUS_LOCKED = initArgs.WORLD_RADIUS_LOCKED;
@@ -194,15 +197,15 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.adminAddress = _newAdmin;
     }
 
-    // function pause() public onlyAdmin {
-    //     require(!s.paused, "Game is already paused");
-    //     s.paused = true;
-    // }
+    function pause() public onlyAdmin {
+        require(!s.paused, "Game is already paused");
+        s.paused = true;
+    }
 
-    // function unpause() public onlyAdmin {
-    //     require(s.paused, "Game is already unpaused");
-    //     s.paused = false;
-    // }
+    function unpause() public onlyAdmin {
+        require(s.paused, "Game is already unpaused");
+        s.paused = false;
+    }
 
     function setOwner(uint256 planetId, address newOwner) public onlyAdmin {
         s.planets[planetId].owner = newOwner;
@@ -232,6 +235,14 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function setTokenMintEndTime(uint256 newTokenMintEndTime) public onlyAdmin {
         s.TOKEN_MINT_END_TIMESTAMP = newTokenMintEndTime;
+    }
+
+    function setStartTime(uint256 newStartTime) public onlyAdmin {
+        s.gameConstants.START_TIME = newStartTime;
+    }
+
+    function setEndTime(uint256 newEndTime) public onlyAdmin {
+        s.gameConstants.END_TIME = newEndTime;
     }
 
     function createPlanet(DarkForestTypes.AdminCreatePlanetArgs memory args) public onlyAdmin {
@@ -339,6 +350,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         );
 
         require(DarkForestPlanet.checkPlayerInit(_location, _perlin, _radius));
+        
         // Initialize player data
         s.playerIds.push(msg.sender);
         s.players[msg.sender] = DarkForestTypes.Player(

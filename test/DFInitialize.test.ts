@@ -103,9 +103,7 @@ describe('DarkForestInit', function () {
       .withArgs(world.user2.address, SPAWN_PLANET_2.id.toString());
   });
 
-  // Removed pause for size constraints. Might add back.
-  it.skip('allows initialization while paused', async function () {
-    //@ts-expect-error
+  it('allows initialization while paused', async function () {
     await world.contracts.core.pause();
 
     // Ensure world is paused for this test
