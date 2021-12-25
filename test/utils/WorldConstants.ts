@@ -10,9 +10,8 @@ export const initializers = settings.parse(settings.Initializers, {
   ADMIN_CAN_ADD_PLANETS: true,
   TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
   WORLD_RADIUS_LOCKED: true,
-  // INITIAL_WORLD_RADIUS: 304514,
+  INITIAL_WORLD_RADIUS: 304514,
   SPAWN_RIM_AREA: 7234560000,
-  DESTROY_THRESHOLD: 2,
 });
 
 // This builds a fake HRE-like object used to initialize the test contracts
@@ -23,7 +22,7 @@ export const target4Initializers = settings.parse(settings.Initializers, {
   BIOMEBASE_KEY: 3,
   TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
   TARGET4_RADIUS: 1,
-  SPAWN_RIM_AREA: 7234560000,
+  // SPAWN_RIM_AREA: 7234560000,
 });
 
 export const shrinkingInitializers = settings.parse(settings.Initializers, {
@@ -31,10 +30,10 @@ export const shrinkingInitializers = settings.parse(settings.Initializers, {
   PLANETHASH_KEY: 1,
   SPACETYPE_KEY: 2,
   BIOMEBASE_KEY: 3,
-  INITIAL_WORLD_RADIUS: 2500,
+  INITIAL_WORLD_RADIUS: 8000,
   TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
   START_TIME: Math.floor(Date.now() / 1000),
-  END_TIME: Math.floor(Date.now() / 1000) + 300,
+  END_TIME: Math.floor(Date.now() / 1000) + 3000,
   MIN_RADIUS: 2000,
   SHRINK_FACTOR: 2,
   SHRINK: true,

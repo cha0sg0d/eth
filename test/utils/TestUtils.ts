@@ -1,5 +1,6 @@
 import { DarkForestCore, DarkForestGetters } from '@darkforest_eth/contracts/typechain';
 import { modPBigInt } from '@darkforest_eth/hashing';
+import { spawn } from 'child_process';
 import { BigNumber, BigNumberish } from 'ethers';
 import { ethers, waffle } from 'hardhat';
 import { TestLocation } from './TestLocation';
@@ -95,7 +96,7 @@ export function makeInitArgs(
     [
       planetLoc.id,
       planetLoc.perlin,
-      planetLoc.distFromOrigin,
+      spawnRadius,
       PLANETHASH_KEY,
       SPACETYPE_KEY,
       PERLIN_LENGTH_SCALE,
