@@ -12,6 +12,11 @@ export const initializers = settings.parse(settings.Initializers, {
   WORLD_RADIUS_LOCKED: true,
   INITIAL_WORLD_RADIUS: 304514,
   SPAWN_RIM_AREA: 7234560000,
+  // SHRINK: true,
+  // SHRINK_FACTOR: 2,
+  // START_TIME: Math.floor(Date.now() / 1000),
+  // END_TIME: Math.floor(Date.now() / 1000) + 50000,
+  
 });
 
 // This builds a fake HRE-like object used to initialize the test contracts
@@ -30,13 +35,15 @@ export const shrinkingInitializers = settings.parse(settings.Initializers, {
   PLANETHASH_KEY: 1,
   SPACETYPE_KEY: 2,
   BIOMEBASE_KEY: 3,
-  INITIAL_WORLD_RADIUS: 8000,
+  INITIAL_WORLD_RADIUS: 3000,
   TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
   START_TIME: Math.floor(Date.now() / 1000),
-  END_TIME: Math.floor(Date.now() / 1000) + 3000,
-  MIN_RADIUS: 2000,
+  END_TIME: Math.floor(Date.now() / 1000) + 50000,
+  MIN_RADIUS: 1000,
   SHRINK_FACTOR: 2,
   SHRINK: true,
+  WORLD_RADIUS_LOCKED: false,
+  // SPAWN_RIM_AREA: 7234560000,
 });
 
 export const VALID_INIT_PERLIN = initializers.INIT_PERLIN_MIN;
@@ -63,6 +70,15 @@ export const SPAWN_PLANET_2 = new TestLocation({
   perlin: VALID_INIT_PERLIN,
   distFromOrigin: 1998,
 });
+
+export const SPAWN_PLANET_3 = new TestLocation({
+  // no asteroids
+  // lvl0
+  hex: '000039be54a58abcff9ef3571afa3f7f2671004d1198fa276b0f9cb54ac9257d',
+  perlin: VALID_INIT_PERLIN,
+  distFromOrigin: 1998,
+});
+
 
 export const LVL0_PLANET_POPCAP_BOOSTED = new TestLocation({
   // byte #9 is < 16; popcap doubled
@@ -308,6 +324,7 @@ export const ARTIFACT_PLANET_2 = new TestLocation({
   perlin: SPACE_PERLIN,
   distFromOrigin: 1998,
 });
+
 
 export const ADMIN_PLANET = new TestLocation({
   hex: '0000000000000000000000000000000000000000000000000000000000000069',
