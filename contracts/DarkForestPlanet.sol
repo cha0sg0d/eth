@@ -394,7 +394,7 @@ library DarkForestPlanet {
         DarkForestTypes.Artifact memory activeArtifactTo =
             DarkForestUtils.getActiveArtifact(args.newLoc);
         
-        // Do nothing if planet is destroyed
+        // Do nothing if planet is destroyed. Ensures that moves will still refresh planet.
         if(s().planetsExtendedInfo[args.newLoc].destroyed || s().planetsExtendedInfo[args.oldLoc].destroyed) {
             return;
         }

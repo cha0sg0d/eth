@@ -139,8 +139,41 @@ library DarkForestUtils {
 
         return (level, planetType, spaceType);
     }
-
     function _getRadius() public view returns (uint256) {
+        if(s().gameConstants.SHRINK) {
+            return _shrinkRadius();
+        }
+        else {
+            return _growRadius();
+        }
+    }
+    
+    function _shrinkRadius() public view returns (uint256) {
+        uint256 radius = s().worldRadius;
+        uint256 shrinkFactor = s().gameConstants.SHRINK_FACTOR;
+        uint256 totalTime = s().gameConstants.END_TIME - s().gameConstants.START_TIME;
+        // Only shrink after START_TIME has occurred. Allows for delaying of shrinking.
+        uint256 startTime = s().gameConstants.START_TIME > block.timestamp ? block.timestamp: s().gameConstants.START_TIME;
+        uint256 minRadius = s().gameConstants.MIN_RADIUS;
+        uint256 timeElapsed = block.timestamp - startTime;
+        if(timeElapsed > totalTime) timeElapsed = totalTime;
+
+        // only shrink after initial time elapsed.
+        radius = (
+            s().worldRadius * 
+                (
+                    (totalTime**shrinkFactor) - 
+                    (timeElapsed**shrinkFactor)
+                )
+            ) 
+            / totalTime**shrinkFactor;
+
+        // set minimum
+        if (radius < minRadius) radius = minRadius;
+        return radius;
+    }
+
+    function _growRadius() public view returns (uint256) {
         uint256 nPlayers = s().playerIds.length;
         uint256 target4RadiusConstant = s().TARGET4_RADIUS;
         uint256 target4 = s().initializedPlanetCountByLevel[4] + 20 * nPlayers;

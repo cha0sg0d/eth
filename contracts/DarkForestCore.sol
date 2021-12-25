@@ -108,7 +108,12 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             LOCATION_REVEAL_COOLDOWN: initArgs.LOCATION_REVEAL_COOLDOWN,
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
             ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
-            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD
+            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD,
+            START_TIME: initArgs.START_TIME,
+            END_TIME: initArgs.END_TIME,
+            MIN_RADIUS: initArgs.MIN_RADIUS,
+            SHRINK_FACTOR: initArgs.SHRINK_FACTOR,
+            SHRINK: initArgs.SHRINK
         });
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
@@ -116,6 +121,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.WORLD_RADIUS_LOCKED = initArgs.WORLD_RADIUS_LOCKED;
         s.TOKEN_MINT_END_TIMESTAMP = initArgs.TOKEN_MINT_END_TIMESTAMP;
         s.TARGET4_RADIUS = initArgs.TARGET4_RADIUS;
+
+        console.log("world Radius at init: %s", s.worldRadius);
 
         DarkForestInitialize.initializeDefaults();
         DarkForestInitialize.initializeUpgrades();
@@ -164,9 +171,6 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     //////////////
     /// Helper ///
     //////////////
-    function getRadius() public returns (uint256) {
-        return s.worldRadius = DarkForestUtils._getRadius();
-    }
 
     // Private helpers that modify state
     function _updateWorldRadius() private {
@@ -457,23 +461,6 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.planets[_location].owner = _player;
 
         emit PlanetTransferred(msg.sender, _location, _player);
-    }
-
-    function buyHat(uint256 _location) public payable {
-        require(
-            s.planetsExtendedInfo[_location].isInitialized == true,
-            "Planet is not initialized"
-        );
-        refreshPlanet(_location);
-
-        require(s.planets[_location].owner == msg.sender, "Only owner can buy hat for planet");
-
-        uint256 cost = (1 << s.planetsExtendedInfo[_location].hatLevel) * 1 ether;
-
-        require(msg.value == cost, "Wrong value sent");
-
-        s.planetsExtendedInfo[_location].hatLevel += 1;
-        emit PlanetHatBought(msg.sender, _location, s.planetsExtendedInfo[_location].hatLevel);
     }
 
     function findArtifact(
