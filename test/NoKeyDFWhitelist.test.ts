@@ -6,7 +6,7 @@ import { SPAWN_PLANET_1 } from './utils/WorldConstants';
 
 const { utils } = ethers;
 
-describe('DarkForestWhitelist', function () {
+describe('NoKeyDarkForestWhitelist', function () {
   let world: World;
 
   async function worldFixture() {
@@ -45,15 +45,12 @@ describe('DarkForestWhitelist', function () {
     expect(currPlayers).to.equal(prevPlayers.add(ethers.BigNumber.from("1")));
   })
 
-  it('should confirm a whitelisted player\s balance has increased by drip amt', async function () {
+  it('should confirm a whitelisted player\'s balance has increased by drip amt', async function () {
     const drip = await world.contracts.whitelist.drip();
-    expect(drip).to.equal(utils.parseEther('0.015'));
-
-    const initialBalance = utils.parseUnits("100", "ether");
-    
-    const currBalance = await world.user1.getBalance();
-
-    expect(initialBalance.add(drip)).to.equal(currBalance);
+    expect(drip).to.equal(utils.parseEther('0.15'));
+    await expect(
+      await world.contracts.whitelist.addAndDripPlayers([world.user2.address])
+    ).to.changeEtherBalance(world.user2, drip);
   });
 
   it('should approve a player who is whitelisted', async function () { 
