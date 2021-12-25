@@ -140,6 +140,7 @@ library DarkForestUtils {
 
         return (level, planetType, spaceType);
     }
+
     function _getRadius() public view returns (uint256) {
         if(s().gameConstants.SHRINK) {
             return _shrinkRadius();
@@ -154,11 +155,18 @@ library DarkForestUtils {
         console.log("curr radius is %s", radius);
         uint256 shrinkFactor = s().gameConstants.SHRINK_FACTOR;
         uint256 totalTime = s().gameConstants.END_TIME - s().gameConstants.START_TIME;
+        console.log("total time %s", totalTime);
         // Only shrink after START_TIME has occurred. Allows for delaying of shrinking.
         uint256 startTime = s().gameConstants.START_TIME > block.timestamp ? block.timestamp: s().gameConstants.START_TIME;
+        console.log("start time %s", startTime);
+        console.log("block timestamp %s", block.timestamp);
         uint256 minRadius = s().gameConstants.MIN_RADIUS;
         uint256 timeElapsed = block.timestamp - startTime;
+        console.log("time Elapsed %s", timeElapsed);
+        console.log("total time %s vs time elapsed %s", totalTime, timeElapsed);
         if(timeElapsed > totalTime) timeElapsed = totalTime;
+        console.log("total time %s vs time elapsed %s", totalTime, timeElapsed);
+
 
         // only shrink after initial time elapsed.
         radius = (
@@ -170,9 +178,10 @@ library DarkForestUtils {
             ) 
             / totalTime**shrinkFactor;
 
+        console.log("pre min check radius is %s", radius);
         // set minimum
         if (radius < minRadius) radius = minRadius;
-        console.log("shrunk radius is %s", radius);
+        console.log("post min check radius is %s", radius);
         return radius;
     }
 
