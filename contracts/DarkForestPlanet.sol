@@ -537,10 +537,11 @@ library DarkForestPlanet {
             uint256[12] memory artifactIdsToAddToPlanet
         ) = getRefreshedPlanet(location, block.timestamp);
 
+        DarkForestTypes.PlanetExtendedInfo memory prevPlanet = s().planetsExtendedInfo[location];
+
+
         s().planets[location] = planet;
         s().planetsExtendedInfo[location] = planetInfo;
-
-        DarkForestTypes.PlanetExtendedInfo memory prevPlanet = s().planetsExtendedInfo[location];
 
         // Only emit PlanetDestroyed when actual destruction occurred.
         if(planetInfo.destroyed && !prevPlanet.destroyed) {
