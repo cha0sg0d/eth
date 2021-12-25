@@ -26,7 +26,7 @@ import {
 
 const { BigNumber: BN } = ethers;
 
-describe('DarkForestMove', function () {
+describe('DarkForestShrink', function () {
   let world: World;
 
   describe('in a shrinking universe', async function () {
@@ -35,12 +35,12 @@ describe('DarkForestMove', function () {
     beforeEach(async function () {
       world = await fixtureLoader(shrinkingWorldFixture);
         
-      await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1));
+      await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1, SPAWN_PLANET_1.distFromOrigin));
     });
 
     it('should decrease in radius size over time', async function () {
       const initRadius = await world.contracts.core.worldRadius();
-      await increaseBlockchainTime(5);
+      await increaseBlockchainTime();
 
       // Recall that universe will only shrink when a player makes a move.
       await world.user1Core.move(
@@ -59,7 +59,7 @@ describe('DarkForestMove', function () {
     before(async function () {
       world = await fixtureLoader(shrinkingWorldFixture);
         
-      await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1));
+      await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1, SPAWN_PLANET_1.distFromOrigin));
     });
 
     it('should conquer a planet', async function () {
