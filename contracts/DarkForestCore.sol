@@ -50,8 +50,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     event ArtifactActivated(address player, uint256 artifactId, uint256 loc); // emitted in DFPlanet library
     event ArtifactDeactivated(address player, uint256 artifactId, uint256 loc); // emitted in DFPlanet library
     event PlanetDestroyed(address player, uint256 loc); // emitted in DFPlanet library
-
-
+    event RadiusUpdated(uint256 radius);
     event PlanetSilverWithdrawn(address player, uint256 loc, uint256 amount);
     
 
@@ -173,13 +172,15 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     /// Helper ///
     //////////////
 
-    // Private helpers that modify state
-    function _updateWorldRadius() private {
+    // Public helpers that modify state
+    function _updateWorldRadius() public {
         if (!s.WORLD_RADIUS_LOCKED) {
             s.worldRadius = DarkForestUtils._getRadius();
+            emit RadiusUpdated(s.worldRadius);
         }
     }
 
+    // Private helpers that modify state
     function initializePlanet(
         uint256 location,
         uint256 perlin,
