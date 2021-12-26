@@ -14,27 +14,27 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import * as snarkjs from 'snarkjs';
 import { DarkForestCore } from '../task-types';
 
-// task('game:pause', 'pause the game').setAction(gamePause);
+task('game:pause', 'pause the game').setAction(gamePause);
 
-// async function gamePause({}, hre: HardhatRuntimeEnvironment) {
-//   await hre.run('utils:assertChainId');
+async function gamePause({}, hre: HardhatRuntimeEnvironment) {
+  await hre.run('utils:assertChainId');
 
-//   const darkForest: DarkForestCore = await hre.run('utils:getCore');
+  const darkForest: DarkForestCore = await hre.run('utils:getCore');
 
-//   const pauseReceipt = await darkForest.pause();
-//   await pauseReceipt.wait();
-// }
+  const pauseReceipt = await darkForest.pause();
+  await pauseReceipt.wait();
+}
 
-// task('game:resume', 'resume the game').setAction(gameResume);
+task('game:resume', 'resume the game').setAction(gameResume);
 
-// async function gameResume({}, hre: HardhatRuntimeEnvironment) {
-//   await hre.run('utils:assertChainId');
+async function gameResume({}, hre: HardhatRuntimeEnvironment) {
+  await hre.run('utils:assertChainId');
 
-//   const darkForest: DarkForestCore = await hre.run('utils:getCore');
+  const darkForest: DarkForestCore = await hre.run('utils:getCore');
 
-//   const unpauseReceipt = await darkForest.unpause();
-//   await unpauseReceipt.wait();
-// }
+  const unpauseReceipt = await darkForest.unpause();
+  await unpauseReceipt.wait();
+}
 
 task('game:setRadius', 'change the radius')
   .addPositionalParam('radius', 'the radius', undefined, types.int)
