@@ -130,7 +130,11 @@ describe('DarkForestShrink', function () {
     it('should allow a silver withdrawal from outside of radius', async function () {
       const withdrawnAmount = (await world.contracts.core.planets(LVL3_SPACETIME_1.id)).silverCap;
 
-      await world.contracts.core.adminSetWorldRadius(SPAWN_PLANET_1.distFromOrigin - 10);
+      expect(
+        await world.contracts.core.adminSetWorldRadius(SPAWN_PLANET_1.distFromOrigin - 10)
+      ).to.emit(world.user1Core, "RadiusUpdated")
+      .withArgs(SPAWN_PLANET_1.distFromOrigin - 10);
+      
       const radius = (await world.user1Core.worldRadius()).toNumber();
       expect(radius).to.equal(SPAWN_PLANET_1.distFromOrigin - 10);
 
