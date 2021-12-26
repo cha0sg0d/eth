@@ -63,14 +63,16 @@ library DarkForestUtils {
     }
 
     function spaceTypeFromPerlin(uint256 perlin) public view returns (DarkForestTypes.SpaceType) {
-        if (perlin >= s().gameConstants.PERLIN_THRESHOLD_3) {
-            return DarkForestTypes.SpaceType.DEAD_SPACE;
-        } else if (perlin >= s().gameConstants.PERLIN_THRESHOLD_2) {
-            return DarkForestTypes.SpaceType.DEEP_SPACE;
-        } else if (perlin >= s().gameConstants.PERLIN_THRESHOLD_1) {
-            return DarkForestTypes.SpaceType.SPACE;
-        }
-        return DarkForestTypes.SpaceType.NEBULA;
+        // JUST FOR TEST ROUND
+        return DarkForestTypes.SpaceType.DEEP_SPACE;
+        // if (perlin >= s().gameConstants.PERLIN_THRESHOLD_3) {
+        //     return DarkForestTypes.SpaceType.DEAD_SPACE;
+        // } else if (perlin >= s().gameConstants.PERLIN_THRESHOLD_2) {
+        //     return DarkForestTypes.SpaceType.DEEP_SPACE;
+        // } else if (perlin >= s().gameConstants.PERLIN_THRESHOLD_1) {
+        //     return DarkForestTypes.SpaceType.SPACE;
+        // }
+        // return DarkForestTypes.SpaceType.NEBULA;
     }
 
     function _getPlanetLevelTypeAndSpaceType(uint256 _location, uint256 _perlin)
