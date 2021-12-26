@@ -35,6 +35,18 @@ contract Whitelist is Initializable {
         return allowedAccountsArray.length;
     }
 
+    function bulkGetWhitelistIds(uint256 startIdx, uint256 endIdx)
+        public
+        view
+        returns (address[] memory ret)
+    {
+        // return slice of players array from startIdx through endIdx - 1
+        ret = new address[](endIdx - startIdx);
+        for (uint256 i = startIdx; i < endIdx; i++) {
+            ret[i - startIdx] = allowedAccountsArray[i];
+        }
+    }
+
     function isWhitelisted(address _addr) public view returns (bool) {
         if (!whitelistEnabled) {
             return true;
