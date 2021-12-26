@@ -84,7 +84,7 @@ export const Initializers = decoders.guard(
     SHRINK: withDefault(decoders.boolean, false),
     SHRINK_FACTOR: withDefault(decoders.number, 2),
     SHRINK_START: withDefault(dateInSeconds, Math.floor(Date.now() / 1000)), // Current time in seconds
-    ROUND_END: withDefault(dateInSeconds, Math.floor(Date.now() / 1000) + 600), // 5 minute round is default
+    ROUND_END: withDefault(dateInSeconds, Math.floor(Date.now() / 1000) + 6000), // 10 minute round is default
     MIN_RADIUS: withDefault(decoders.number, 500),
     DISC_LOWER_BOUND: withDefault(decoders.number, 50),
     DISC_UPPER_BOUND: withDefault(decoders.number, 75), 
