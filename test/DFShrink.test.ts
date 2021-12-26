@@ -38,8 +38,8 @@ describe('DarkForestShrink', function () {
 
       const time = await getCurrentTime();
 
-      await world.contracts.core.setStartTime(time);
-      await world.contracts.core.setEndTime(time + 5000);
+      await world.contracts.core.setShrinkStart(time);
+      await world.contracts.core.setRoundEnd(time + 5000);
       await world.contracts.core.adminSetWorldRadius(shrinkingInitializers.INITIAL_WORLD_RADIUS);
 
       await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1, SPAWN_PLANET_1.distFromOrigin));
@@ -113,8 +113,8 @@ describe('DarkForestShrink', function () {
 
       const time = await getCurrentTime();
 
-      await world.contracts.core.setStartTime(time);
-      await world.contracts.core.setEndTime(time + 5000);
+      await world.contracts.core.setShrinkStart(time);
+      await world.contracts.core.setRoundEnd(time + 5000);
       await world.contracts.core.adminSetWorldRadius(initializers.INITIAL_WORLD_RADIUS);
       await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1, SPAWN_PLANET_1.distFromOrigin));
 

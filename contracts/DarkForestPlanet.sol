@@ -375,8 +375,8 @@ library DarkForestPlanet {
         // this will only allow players to initialize in the middle ring of the universe. 
         if(s().gameConstants.SHRINK) {
             uint256 radius = s().worldRadius;
-            uint256 upperQuartile = (radius * 75) / 100;
-            uint256 lowerQuartile = (radius * 25) / 100;
+            uint256 upperQuartile = (radius * s().gameConstants.DISC_UPPER_BOUND) / 100;
+            uint256 lowerQuartile = (radius * s().gameConstants.DISC_LOWER_BOUND) / 100;
             console.log("lowerQuartile %s upperQuartile %s player radius %s", lowerQuartile, upperQuartile, _radius);
             require(_radius >= lowerQuartile, "Init radius is too low");
             require(_radius <= upperQuartile, "Init radius is too high");

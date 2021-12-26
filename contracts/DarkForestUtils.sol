@@ -154,10 +154,10 @@ library DarkForestUtils {
         uint256 radius = s().worldRadius;
         console.log("curr radius is %s", radius);
         uint256 shrinkFactor = s().gameConstants.SHRINK_FACTOR;
-        uint256 totalTime = s().gameConstants.END_TIME - s().gameConstants.START_TIME;
+        uint256 totalTime = s().gameConstants.ROUND_END - s().gameConstants.SHRINK_START;
         console.log("total time %s", totalTime);
         // Only shrink after START_TIME has occurred. Allows for delaying of shrinking.
-        uint256 startTime = s().gameConstants.START_TIME > block.timestamp ? block.timestamp: s().gameConstants.START_TIME;
+        uint256 startTime = s().gameConstants.SHRINK_START > block.timestamp ? block.timestamp: s().gameConstants.SHRINK_START;
         console.log("start time %s", startTime);
         console.log("block timestamp %s", block.timestamp);
         uint256 minRadius = s().gameConstants.MIN_RADIUS;

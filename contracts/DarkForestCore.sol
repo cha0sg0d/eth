@@ -110,14 +110,14 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
             ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
             DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD,
-            START_TIME: initArgs.START_TIME,
-            END_TIME: initArgs.END_TIME,
+            SHRINK_START: initArgs.SHRINK_START,
+            ROUND_END: initArgs.ROUND_END,
             MIN_RADIUS: initArgs.MIN_RADIUS,
             SHRINK_FACTOR: initArgs.SHRINK_FACTOR,
+            DISC_LOWER_BOUND: initArgs.DISC_LOWER_BOUND,
+            DISC_UPPER_BOUND: initArgs.DISC_UPPER_BOUND,
             SHRINK: initArgs.SHRINK
         });
-
-        console.log("START_TIME %s", s.gameConstants.START_TIME);
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
         s.ADMIN_CAN_ADD_PLANETS = initArgs.ADMIN_CAN_ADD_PLANETS;
@@ -237,12 +237,12 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.TOKEN_MINT_END_TIMESTAMP = newTokenMintEndTime;
     }
 
-    function setStartTime(uint256 newStartTime) public onlyAdmin {
-        s.gameConstants.START_TIME = newStartTime;
+    function setShrinkStart(uint256 newShrinkStart) public onlyAdmin {
+        s.gameConstants.SHRINK_START = newShrinkStart;
     }
 
-    function setEndTime(uint256 newEndTime) public onlyAdmin {
-        s.gameConstants.END_TIME = newEndTime;
+    function setRoundEnd(uint256 newEndTime) public onlyAdmin {
+        s.gameConstants.ROUND_END = newEndTime;
     }
 
     function createPlanet(DarkForestTypes.AdminCreatePlanetArgs memory args) public onlyAdmin {
@@ -350,7 +350,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         );
 
         require(DarkForestPlanet.checkPlayerInit(_location, _perlin, _radius));
-        
+
         // Initialize player data
         s.playerIds.push(msg.sender);
         s.players[msg.sender] = DarkForestTypes.Player(

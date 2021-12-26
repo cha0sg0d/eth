@@ -37,12 +37,12 @@ export const shrinkingInitializers = settings.parse(settings.Initializers, {
   BIOMEBASE_KEY: 3,
   INITIAL_WORLD_RADIUS: 3000,
   TOKEN_MINT_END_TIMESTAMP: '3031-05-27T18:59:59.000Z',
-  START_TIME: Math.floor(Date.now() / 1000),
-  END_TIME: Math.floor(Date.now() / 1000) + 50000,
   MIN_RADIUS: 1000,
   SHRINK_FACTOR: 2,
   SHRINK: true,
   WORLD_RADIUS_LOCKED: false,
+  DISC_LOWER_BOUND: 50,
+  DISC_UPPER_BOUND: 75
   // SPAWN_RIM_AREA: 7234560000,
 });
 
