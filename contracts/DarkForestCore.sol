@@ -219,6 +219,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function adminSetWorldRadius(uint256 _newRadius) public onlyAdmin {
         s.worldRadius = _newRadius;
+        emit RadiusUpdated(s.worldRadius);
     }
 
     function changeLocationRevealCooldown(uint256 newCooldown) public onlyAdmin {
