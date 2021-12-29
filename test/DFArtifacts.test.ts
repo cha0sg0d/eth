@@ -809,7 +809,7 @@ describe('DarkForestArtifacts', function () {
   });
 
   describe('black domain', function () {
-    it('is burnt after usage, and prevents moves from being made to it and from it', async function () {
+    it.skip('is burnt after usage, and prevents moves from being made to it and from it', async function () {
       const to = LVL0_PLANET;
       const dist = 50;
       const shipsSent = 10000;

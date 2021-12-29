@@ -9,6 +9,7 @@ import "./DarkForestUtils.sol";
 import "./DarkForestPlanet.sol";
 import "./DarkForestInitialize.sol";
 import "./DarkForestArtifactUtils.sol";
+import "hardhat/console.sol";
 
 // .______       _______     ___       _______  .___  ___.  _______
 // |   _  \     |   ____|   /   \     |       \ |   \/   | |   ____|
@@ -48,8 +49,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     event ArtifactWithdrawn(address player, uint256 artifactId, uint256 loc);
     event ArtifactActivated(address player, uint256 artifactId, uint256 loc); // emitted in DFPlanet library
     event ArtifactDeactivated(address player, uint256 artifactId, uint256 loc); // emitted in DFPlanet library
-
+    event PlanetDestroyed(address player, uint256 loc); // emitted in DFPlanet library
+    event RadiusUpdated(uint256 radius);
     event PlanetSilverWithdrawn(address player, uint256 loc, uint256 amount);
+    
 
     // initialization functions are only called once during deployment. They are not called during upgrades.
 
@@ -59,6 +62,8 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         address payable _tokensAddress,
         DarkForestTypes.DFInitArgs memory initArgs
     ) public initializer {
+
+        // s.startTime = block.timestamp;
         s.adminAddress = _adminAddress;
         s.whitelist = Whitelist(_whitelistAddress);
         s.tokens = DarkForestTokens(_tokensAddress);
@@ -102,7 +107,15 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             PHOTOID_ACTIVATION_DELAY: initArgs.PHOTOID_ACTIVATION_DELAY,
             LOCATION_REVEAL_COOLDOWN: initArgs.LOCATION_REVEAL_COOLDOWN,
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
-            ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES
+            ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
+            DESTROY_THRESHOLD: initArgs.DESTROY_THRESHOLD,
+            SHRINK_START: initArgs.SHRINK_START,
+            ROUND_END: initArgs.ROUND_END,
+            MIN_RADIUS: initArgs.MIN_RADIUS,
+            SHRINK_FACTOR: initArgs.SHRINK_FACTOR,
+            DISC_LOWER_BOUND: initArgs.DISC_LOWER_BOUND,
+            DISC_UPPER_BOUND: initArgs.DISC_UPPER_BOUND,
+            SHRINK: initArgs.SHRINK
         });
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
@@ -159,13 +172,15 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     /// Helper ///
     //////////////
 
-    // Private helpers that modify state
-    function _updateWorldRadius() private {
+    // Public helpers that modify state
+    function _updateWorldRadius() public {
         if (!s.WORLD_RADIUS_LOCKED) {
             s.worldRadius = DarkForestUtils._getRadius();
+            emit RadiusUpdated(s.worldRadius);
         }
     }
 
+    // Private helpers that modify state
     function initializePlanet(
         uint256 location,
         uint256 perlin,
@@ -204,10 +219,15 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function adminSetWorldRadius(uint256 _newRadius) public onlyAdmin {
         s.worldRadius = _newRadius;
+        emit RadiusUpdated(s.worldRadius);
     }
 
     function changeLocationRevealCooldown(uint256 newCooldown) public onlyAdmin {
         s.gameConstants.LOCATION_REVEAL_COOLDOWN = newCooldown;
+    }
+
+    function changeDestroyThreshold(uint256 newThreshold) public onlyAdmin {
+        s.gameConstants.DESTROY_THRESHOLD = newThreshold;
     }
 
     function withdraw() public onlyAdmin {
@@ -217,6 +237,14 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function setTokenMintEndTime(uint256 newTokenMintEndTime) public onlyAdmin {
         s.TOKEN_MINT_END_TIMESTAMP = newTokenMintEndTime;
+    }
+
+    function setShrinkStart(uint256 newShrinkStart) public onlyAdmin {
+        s.gameConstants.SHRINK_START = newShrinkStart;
+    }
+
+    function setRoundEnd(uint256 newEndTime) public onlyAdmin {
+        s.gameConstants.ROUND_END = newEndTime;
     }
 
     function createPlanet(DarkForestTypes.AdminCreatePlanetArgs memory args) public onlyAdmin {
@@ -248,6 +276,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
 
     function refreshPlanet(uint256 location) public notPaused {
         DarkForestPlanet.refreshPlanet(location);
+
     }
 
     function getRefreshedPlanet(uint256 location, uint256 timestamp)
@@ -323,6 +352,7 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         );
 
         require(DarkForestPlanet.checkPlayerInit(_location, _perlin, _radius));
+
         // Initialize player data
         s.playerIds.push(msg.sender);
         s.players[msg.sender] = DarkForestTypes.Player(
@@ -447,23 +477,6 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
         s.planets[_location].owner = _player;
 
         emit PlanetTransferred(msg.sender, _location, _player);
-    }
-
-    function buyHat(uint256 _location) public payable {
-        require(
-            s.planetsExtendedInfo[_location].isInitialized == true,
-            "Planet is not initialized"
-        );
-        refreshPlanet(_location);
-
-        require(s.planets[_location].owner == msg.sender, "Only owner can buy hat for planet");
-
-        uint256 cost = (1 << s.planetsExtendedInfo[_location].hatLevel) * 1 ether;
-
-        require(msg.value == cost, "Wrong value sent");
-
-        s.planetsExtendedInfo[_location].hatLevel += 1;
-        emit PlanetHatBought(msg.sender, _location, s.planetsExtendedInfo[_location].hatLevel);
     }
 
     function findArtifact(

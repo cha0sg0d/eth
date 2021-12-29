@@ -181,6 +181,10 @@ contract DarkForestStorageV1 {
         return s.gameConstants.LOCATION_REVEAL_COOLDOWN;
     }
 
+    function getShrinkStart() public view returns (uint256) {
+        return s.gameConstants.SHRINK_START;
+    }
+
     function getDefaultStats() public view returns (DarkForestTypes.PlanetDefaultStats[] memory) {
         return s.planetDefaultStats;
     }

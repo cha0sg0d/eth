@@ -422,8 +422,8 @@ describe('move to enemy planet', function () {
     const planet2Id = LVL1_ASTEROID_2.id;
     const dist = 100;
     const silverSent = 100;
-
-    await world.user1Core.move(...makeMoveArgs(SPAWN_PLANET_2, LVL1_ASTEROID_2, dist, 99999, 0));
+    
+    await world.user1Core.move(...makeMoveArgs(SPAWN_PLANET_1, LVL1_ASTEROID_2, dist, 99999, 0));
     await increaseBlockchainTime();
     await world.user2Core.move(
       ...makeMoveArgs(LVL1_ASTEROID_1, LVL1_ASTEROID_2, dist, 99999, silverSent)

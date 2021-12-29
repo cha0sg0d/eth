@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 import "./ABDKMath64x64.sol";
 import "./DarkForestTypes.sol";
 import "./DarkForestTokens.sol";
+import "hardhat/console.sol";
 
 library DarkForestUtils {
     // the only contract that ever calls this is DarkForestCore, which has a known storage layout
@@ -62,14 +63,16 @@ library DarkForestUtils {
     }
 
     function spaceTypeFromPerlin(uint256 perlin) public view returns (DarkForestTypes.SpaceType) {
-        if (perlin >= s().gameConstants.PERLIN_THRESHOLD_3) {
-            return DarkForestTypes.SpaceType.DEAD_SPACE;
-        } else if (perlin >= s().gameConstants.PERLIN_THRESHOLD_2) {
-            return DarkForestTypes.SpaceType.DEEP_SPACE;
-        } else if (perlin >= s().gameConstants.PERLIN_THRESHOLD_1) {
-            return DarkForestTypes.SpaceType.SPACE;
-        }
-        return DarkForestTypes.SpaceType.NEBULA;
+        // JUST FOR TEST ROUND
+        return DarkForestTypes.SpaceType.DEEP_SPACE;
+        // if (perlin >= s().gameConstants.PERLIN_THRESHOLD_3) {
+        //     return DarkForestTypes.SpaceType.DEAD_SPACE;
+        // } else if (perlin >= s().gameConstants.PERLIN_THRESHOLD_2) {
+        //     return DarkForestTypes.SpaceType.DEEP_SPACE;
+        // } else if (perlin >= s().gameConstants.PERLIN_THRESHOLD_1) {
+        //     return DarkForestTypes.SpaceType.SPACE;
+        // }
+        // return DarkForestTypes.SpaceType.NEBULA;
     }
 
     function _getPlanetLevelTypeAndSpaceType(uint256 _location, uint256 _perlin)
@@ -141,6 +144,50 @@ library DarkForestUtils {
     }
 
     function _getRadius() public view returns (uint256) {
+        if(s().gameConstants.SHRINK) {
+            return _shrinkRadius();
+        }
+        else {
+            return _growRadius();
+        }
+    }
+    
+    function _shrinkRadius() public view returns (uint256) {
+        uint256 radius = s().worldRadius;
+        console.log("curr radius is %s", radius);
+        uint256 shrinkFactor = s().gameConstants.SHRINK_FACTOR;
+        uint256 totalTime = s().gameConstants.ROUND_END - s().gameConstants.SHRINK_START;
+        console.log("total time %s", totalTime);
+        // Only shrink after START_TIME has occurred. Allows for delaying of shrinking.
+        uint256 startTime = s().gameConstants.SHRINK_START > block.timestamp ? block.timestamp: s().gameConstants.SHRINK_START;
+        console.log("start time %s", startTime);
+        console.log("block timestamp %s", block.timestamp);
+        uint256 minRadius = s().gameConstants.MIN_RADIUS;
+        uint256 timeElapsed = block.timestamp - startTime;
+        console.log("time Elapsed %s", timeElapsed);
+        console.log("total time %s vs time elapsed %s", totalTime, timeElapsed);
+        if(timeElapsed > totalTime) timeElapsed = totalTime;
+        console.log("total time %s vs time elapsed %s", totalTime, timeElapsed);
+
+
+        // only shrink after initial time elapsed.
+        radius = (
+            s().worldRadius * 
+                (
+                    (totalTime**shrinkFactor) - 
+                    (timeElapsed**shrinkFactor)
+                )
+            ) 
+            / totalTime**shrinkFactor;
+
+        console.log("pre min check radius is %s", radius);
+        // set minimum
+        if (radius < minRadius) radius = minRadius;
+        console.log("post min check radius is %s", radius);
+        return radius;
+    }
+
+    function _growRadius() public view returns (uint256) {
         uint256 nPlayers = s().playerIds.length;
         uint256 target4RadiusConstant = s().TARGET4_RADIUS;
         uint256 target4 = s().initializedPlanetCountByLevel[4] + 20 * nPlayers;
