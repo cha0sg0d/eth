@@ -1,59 +1,133 @@
 # Configuration for a Dark Forest universe
 # Defined in TOML as per https://toml.io/en/v0.5.0
 
+# Note: You can set the default values for parameters that you don't list here in `settings.ts` 
+
 [initializers]
+# Allows custom planets to be added to the universe. Ex: a Lvl 9 Planet at (0,0)                                              
 ADMIN_CAN_ADD_PLANETS = true
-WORLD_RADIUS_LOCKED = false
+
+# If true, radius cannot grow or shrink.
+WORLD_RADIUS_LOCKED = true
+
+# Timestamp after which artifats can no longer be found
 TOKEN_MINT_END_TIMESTAMP = 2022-01-05T07:59:59.000Z # Jan 4, 2022, 11:59:59 PM (PST)
+
+# The floor for the target4 radius value. Not used unless > 65520.
+# See the _growRadius function in DarkForestUtils.sol for details.
 TARGET4_RADIUS = 1600
-INITIAL_WORLD_RADIUS = 400000 # 400k
+
+# The initial world radius for the universe. 
+INITIAL_WORLD_RADIUS = 10000
 
 ##################################
 # SNARK keys & Perlin parameters #
 ##################################
+
+# For dev purposes, if true, enables a faster hash of the universe and no ZK CHECKS.
+# Make sure to always test your game with this param set to false before deploying.
 DISABLE_ZK_CHECKS = false
-PLANETHASH_KEY = 2168
-SPACETYPE_KEY = 2169
-BIOMEBASE_KEY = 2160
-PERLIN_MIRROR_X = false
-PERLIN_MIRROR_Y = false
+
+# The following 3 values are the random seeds of the universe
+# Change these values before deploying for a freshly random universe.
+PLANETHASH_KEY = 1234 # Key for mimc hashing
+SPACETYPE_KEY = 1235 # Key for spacetype perlin 
+BIOMEBASE_KEY = 1230 # Key for biombase perlin
+
+# Enables mirroring of perlin values, for credibly neutral maps.
+# If both MIRROR X and Y are true, each quadrant of the universe will have same Space Type and Biome
+PERLIN_MIRROR_X = true # (x,y) => (|x|,y) for perlin.
+PERLIN_MIRROR_Y = true # (x,y) => (x,|y|) for perlin.
+
+# Determines the size of the regions of perlin noise.
 PERLIN_LENGTH_SCALE = 16384 # must be a power of two no greater than 16384
+
+########################
+# Shrink configuration #
+########################
+# See _shrinkRadius in DarkForestUtils.sol for details
+SHRINK = 0 # No shrink if 0. Most common setting is 2.
+
+# Universe will shrink from SHRINK_START to ROUND END and won't go below MIN_RADIUS.
+SHRINK_START = 2022-01-01T20:00:00.000Z # Jan 1, 2022, 12:00:00 PM 
+ROUND_END = 2022-01-05T07:59:59.000Z # Jan 4, 2022, 11:59:59 PM (PST)
+MIN_RADIUS = 80000 # A good choice is 20% of INITIAL_WORLD_RADIUS.
+
+# If shrink > 0, will only allow players to spawn at a planet with a radius that is between 
+# (in this case) 50% and 75% (inclusive) of the current world radius. 
+DISC_LOWER_BOUND = 50
+DISC_UPPER_BOUND = 75
 
 ######################
 # Game configuration #
 ######################
-SHRINK = 2 # No shrink if 0
-SHRINK_START = 2022-01-01T20:00:00.000Z # Jan 1, 2022, 12:00:00 PM 
-ROUND_END = 2022-01-05T07:59:59.000Z # Jan 4, 2022, 11:59:59 PM (PST)
-MIN_RADIUS = 80000 # SHOULD be 20% of INITIAL_WORLD_RADIUS - 80k.
+
+# If > 0, a planet owned by another player can be destroyed if the energy arriving at that planet
+# is greater than DESTROY_THRESHOLD * planet.population.
+# If set to 1, it will make capturing enemy planets impossible and destroy them every time.
 DESTROY_THRESHOLD = 2
+
+# The maximum level a planet can be. Unused because max is planetThresholds.length - 1, which is 9.
 MAX_NATURAL_PLANET_LEVEL = 256
-TIME_FACTOR_HUNDREDTHS = 500 # speedup/slowdown game
-PERLIN_THRESHOLD_1 = 1
-PERLIN_THRESHOLD_2 = 2
-PERLIN_THRESHOLD_3 = 18
+
+# Base value is 100, so 1000 is 10x the base speed.
+# This will multiply energy growth, silver growth, and move speed by this value.
+TIME_FACTOR_HUNDREDTHS = 1000 # speedup/slowdown game
+
+# Determines which the Perlin cutoffs for SpaceType
+# See spaceTypeFromPerlin(uint256 perlin) in DarkForestUtils.sol for details
+PERLIN_THRESHOLD_1 = 7
+PERLIN_THRESHOLD_2 = 14
+PERLIN_THRESHOLD_3 = 16
+
+# Determines the Perlin cutoffs for the SpaceType that players can spawn in.
+# See checkPlayerInit(...) in DarkForestPlanet.sol for details
 INIT_PERLIN_MIN = 1
 INIT_PERLIN_MAX = 31
-SPAWN_RIM_AREA = 0
+
+# If > 0, determines where players are allowed to spawn.
+# Players cannot spawn if their spawn planet's area is less than the spawn rim area.
+# Setting spawn rim area is based on the area of your world, so do some math
+# checkPlayerInit(...) in DarkForestPlanet.sol for details.
+SPAWN_RIM_AREA = 254340000 # (9k * 9k * 3.14)
+
+# Determines the Biome type based on Perlin cutoffs
+# See _getBiome(DarkForestTypes.SpaceType spaceType, uint256 biomebase) for details.
 BIOME_THRESHOLD_1 = 15
 BIOME_THRESHOLD_2 = 17
+
+# Determines how often planets will appear when hashing the universe. 
+# A lower number means planets will appear with greater frequency.
+# See  _locationIdValid(uint256 _loc) in DarkForestUtils.sol for details.
 PLANET_RARITY = 16384
+
+# The time you must wait after activating a photoid cannon before your next move.
+# TODO: Divide this value by the TIME_FACTOR_HUNDREDTHS
 PHOTOID_ACTIVATION_DELAY = 14400 # seconds
-LOCATION_REVEAL_COOLDOWN = 1800 # seconds -> 30 minutes
-CLAIM_PLANET_COOLDOWN = 10800 # seconds
+
+# The time you must wait in betwen revealing planets
+LOCATION_REVEAL_COOLDOWN = 1800 # seconds => 30 minutes
+
+# Time time you must wait in between claiming planets => only used for v0.6.3
+CLAIM_PLANET_COOLDOWN = 10800 # seconds => 3 hours
+
+# Determines the frequency of planet types based on SpaceType
+# See _getPlanetLevelTypeAndSpaceType in DarkForestUtils for details.
 PLANET_TYPE_WEIGHTS = [
+  # Nebula SpaceType
   [
-    [1, 0, 0, 0, 0],
-    [13, 2, 0, 1, 0],
-    [13, 2, 0, 1, 0],
+    [1, 0, 0, 0, 0], # Level 0
+    [13, 2, 0, 1, 0], # Level 1
+    [13, 2, 0, 1, 0], # Level 2
+    [13, 2, 0, 0, 1], # ...
     [13, 2, 0, 0, 1],
     [13, 2, 0, 0, 1],
     [13, 2, 0, 0, 1],
     [13, 2, 0, 0, 1],
     [13, 2, 0, 0, 1],
-    [13, 2, 0, 0, 1],
-    [13, 2, 0, 0, 1],
+    [13, 2, 0, 0, 1], # Level 9
   ],
+  # Space SpaceType
   [
     [1, 0, 0, 0, 0],
     [13, 2, 1, 0, 0],
@@ -66,6 +140,7 @@ PLANET_TYPE_WEIGHTS = [
     [12, 2, 1, 0, 1],
     [12, 2, 1, 0, 1],
   ],
+  # Deep Space SpaceType
   [
     [1, 0, 0, 0, 0],
     [10, 4, 2, 0, 0],
@@ -78,6 +153,7 @@ PLANET_TYPE_WEIGHTS = [
     [8, 4, 1, 2, 1],
     [8, 4, 1, 2, 1],
   ],
+  # Dead Space SpaceType
   [
     [1, 0, 0, 0, 0],
     [11, 4, 1, 0, 0],
@@ -96,10 +172,12 @@ PLANET_TYPE_WEIGHTS = [
 ##########################
 # Planets to add to game #
 ##########################
+
+# These planets get added to your universe with the game:createPlanets Hardhat task.
 [[planets]]
-  x = 0
-  y = 0
-  level = 9
-  planetType = 3
-  requireValidLocationId = false
-  revealLocation = true
+  # x = 0
+  # y = 0
+  # level = 9
+  # planetType = 0
+  # requireValidLocationId = false
+  # revealLocation = true 
