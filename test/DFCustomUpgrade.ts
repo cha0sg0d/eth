@@ -7,7 +7,7 @@ import {
   increaseBlockchainTime,
   makeInitArgs,
 } from './utils/TestUtils';
-import { defaultWorldFixture, World } from './utils/TestWorld';
+import { customUpgradeWorldFixture, defaultWorldFixture, World } from './utils/TestWorld';
 import {
   ARTIFACT_PLANET_1,
   LVL1_ASTEROID_2,
@@ -21,11 +21,11 @@ import {
 
 const { BigNumber: BN } = ethers;
 
-describe('DarkForestUpgrade', function () {
+describe('DarkForestCustomUpgrade', function () {
   let world: World;
 
   beforeEach('load fixture', async function () {
-    world = await fixtureLoader(defaultWorldFixture);
+    world = await fixtureLoader(customUpgradeWorldFixture);
   });
 
   it('should reject if planet not initialized', async function () {
@@ -105,7 +105,7 @@ describe('DarkForestUpgrade', function () {
     expect(initialPopulationGrowth).to.be.below(newPopulationGrowth);
   });
 
-  it('should reject upgrade on silver mine, ruins, silver bank, and trading post', async function () {
+  it('should reject upgrade on planets that are NOT upgradeable', async function () {
     await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1));
 
     // conquer the special planets
@@ -120,18 +120,39 @@ describe('DarkForestUpgrade', function () {
     await feedSilverToCap(world, world.user1Core, LVL1_ASTEROID_2, LVL1_QUASAR);
     await increaseBlockchainTime(); // fills up LVL1_ASTEROID_2
 
-    await expect(world.user1Core.upgradePlanet(LVL1_ASTEROID_2.id, 0)).to.be.revertedWith(
-      'Can only upgrade allowed planet types'
-    );
-    await expect(world.user1Core.upgradePlanet(LVL3_SPACETIME_1.id, 0)).to.be.revertedWith(
-      'Can only upgrade allowed planet types'
-    );
-    await expect(world.user1Core.upgradePlanet(ARTIFACT_PLANET_1.id, 0)).to.be.revertedWith(
-      'Can only upgrade allowed planet types'
-    );
-    await expect(world.user1Core.upgradePlanet(LVL1_QUASAR.id, 0)).to.be.revertedWith(
-      'Can only upgrade allowed planet types'
-    );
+    const UPGRADEABLE_PLANETS = (await world.contracts.core.gameConstants()).UPGRADEABLE_PLANETS;
+
+    enum PlanetType {PLANET, ASTEROID, FOUNDRY, RIP, QUASAR};
+
+    // Only expect revert on planets that are NOT upgradeable
+
+    if(!UPGRADEABLE_PLANETS[PlanetType.PLANET]) {
+      console.log("ERROR: PLANET type must be upgradeable");
+    }
+
+    if(!UPGRADEABLE_PLANETS[PlanetType.ASTEROID]) {
+      await expect(world.user1Core.upgradePlanet(LVL1_ASTEROID_2.id, 0)).to.be.revertedWith(
+        'Can only upgrade allowed planet types'
+      );
+    }
+
+    if(!UPGRADEABLE_PLANETS[PlanetType.FOUNDRY]) {
+      await expect(world.user1Core.upgradePlanet(ARTIFACT_PLANET_1.id, 0)).to.be.revertedWith(
+        'Can only upgrade allowed planet types'
+      );
+    }
+
+    if(!UPGRADEABLE_PLANETS[PlanetType.RIP]) {
+      await expect(world.user1Core.upgradePlanet(LVL3_SPACETIME_1.id, 0)).to.be.revertedWith(
+        'Can only upgrade allowed planet types'
+      );
+    }
+
+    if(!UPGRADEABLE_PLANETS[PlanetType.QUASAR]) {
+      await expect(world.user1Core.upgradePlanet(LVL1_QUASAR.id, 0)).to.be.revertedWith(
+        'Can only upgrade allowed planet types'
+      );
+    }
   });
 
   it("should reject upgrade if there's not enough resources", async function () {
@@ -230,5 +251,50 @@ describe('DarkForestUpgrade', function () {
     await expect(world.user1Core.upgradePlanet(upgradeablePlanetId, 1)).to.be.revertedWith(
       'Planet at max total level'
     );
+  });
+
+  it('should recognize upgradeable planets config', async function (){
+    const gameConstants = await world.contracts.core.gameConstants()
+    const expected = [true,true,false,false,false];
+    expect(gameConstants.UPGRADEABLE_PLANETS).to.eql(expected);
+  });
+
+  it('should upgrade asteroid if asteroid is upgradeable', async function (){
+    const ASTEROID = 1;
+    const gameConstants = await world.contracts.core.gameConstants()
+    expect(gameConstants.UPGRADEABLE_PLANETS[ASTEROID]).to.be.true;
+
+    const upgradeablePlanetId = LVL1_PLANET_NEBULA.id;
+    const silverMinePlanetId = LVL1_ASTEROID_2.id;
+
+    await world.user1Core.initializePlayer(...makeInitArgs(SPAWN_PLANET_1));
+
+    // conquer silver mine and upgradeable planet
+    await conquerUnownedPlanet(world, world.user1Core, SPAWN_PLANET_1, LVL1_PLANET_NEBULA);
+    await conquerUnownedPlanet(world, world.user1Core, SPAWN_PLANET_1, LVL1_ASTEROID_2);
+
+    await increaseBlockchainTime();
+
+    await world.user1Core.refreshPlanet(silverMinePlanetId);
+
+    const planetBeforeUpgrade = await world.contracts.core.planets(silverMinePlanetId);
+
+    const silverCap = planetBeforeUpgrade.silverCap.toNumber();
+    const initialSilver = planetBeforeUpgrade.silver.toNumber();
+    const initialPopulationCap = planetBeforeUpgrade.populationCap;
+    const initialPopulationGrowth = planetBeforeUpgrade.populationGrowth;
+
+    await expect(world.user1Core.upgradePlanet(silverMinePlanetId, 0))
+      .to.emit(world.contracts.core, 'PlanetUpgraded')
+      .withArgs(world.user1.address, silverMinePlanetId, BN.from(0), BN.from(1));
+
+    const planetAfterUpgrade = await world.contracts.core.planets(silverMinePlanetId);
+    const newPopulationCap = planetAfterUpgrade.populationCap;
+    const newPopulationGrowth = planetAfterUpgrade.populationGrowth;
+    const newSilver = planetAfterUpgrade.silver.toNumber();
+
+    expect(newSilver).to.equal(initialSilver - 0.2 * silverCap);
+    expect(initialPopulationCap).to.be.below(newPopulationCap);
+    expect(initialPopulationGrowth).to.be.below(newPopulationGrowth);
   });
 });
