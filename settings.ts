@@ -159,6 +159,10 @@ export const Initializers = decoders.guard(
       array6(decoders.number),
       [0, 2000, 10000, 200000, 3000000, 20000000]
     ),
+    UPGRADEABLE_PLANETS: withDefault<ExactArray5<boolean>>(
+      exactArray5(decoders.boolean),
+      [true,false,false,false,false]
+    )
   }),
   { style: 'simple' }
 );
@@ -335,6 +339,7 @@ function array6<A>(decoder: decoders.Decoder<A>) {
     (value) => [value[0], value[1], value[2], value[3], value[4], value[5]] as Tuple6<A>
   );
 }
+
 
 type ExactArray10<A> = [A, A, A, A, A, A, A, A, A, A];
 

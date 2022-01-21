@@ -118,6 +118,7 @@ library DarkForestTypes {
         uint256 SHRINK;
         uint256 DISC_LOWER_BOUND;
         uint256 DISC_UPPER_BOUND;
+        bool[5] UPGRADEABLE_PLANETS;
     }
 
     struct DFInitArgs {
@@ -157,6 +158,8 @@ library DarkForestTypes {
         uint256 SHRINK;
         uint256 DISC_LOWER_BOUND;
         uint256 DISC_UPPER_BOUND;
+        bool[5] UPGRADEABLE_PLANETS;
+
     }
 
     struct DFPInitPlanetArgs {

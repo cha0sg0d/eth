@@ -320,8 +320,8 @@ library DarkForestPlanet {
         require(planetLevel > 0, "Planet level is not high enough for this upgrade");
         require(_branch < 3, "Upgrade branch not valid");
         require(
-            planet.planetType == DarkForestTypes.PlanetType.PLANET,
-            "Can only upgrade regular planets"
+             s().gameConstants.UPGRADEABLE_PLANETS[uint256(planet.planetType)],
+            "Can only upgrade allowed planet types"
         );
         require(!info.destroyed, "planet is destroyed");
 

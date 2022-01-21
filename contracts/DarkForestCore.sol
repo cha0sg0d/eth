@@ -108,11 +108,12 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
             PLANET_TYPE_WEIGHTS: initArgs.PLANET_TYPE_WEIGHTS,
             ARTIFACT_POINT_VALUES: initArgs.ARTIFACT_POINT_VALUES,
             SHRINK: initArgs.SHRINK,
-           SHRINK_START: initArgs.SHRINK_START,
+            SHRINK_START: initArgs.SHRINK_START,
             ROUND_END: initArgs.ROUND_END,
             MIN_RADIUS: initArgs.MIN_RADIUS,
             DISC_LOWER_BOUND: initArgs.DISC_LOWER_BOUND,
-            DISC_UPPER_BOUND: initArgs.DISC_UPPER_BOUND
+            DISC_UPPER_BOUND: initArgs.DISC_UPPER_BOUND,
+            UPGRADEABLE_PLANETS: initArgs.UPGRADEABLE_PLANETS
         });
 
         s.worldRadius = initArgs.INITIAL_WORLD_RADIUS; // will be overridden by TARGET4_RADIUS if !WORLD_RADIUS_LOCKED
@@ -189,10 +190,10 @@ contract DarkForestCore is Initializable, DarkForestStorageV1 {
     /// Administrative Engine ///
     /////////////////////////////
 
-    function changeAdmin(address _newAdmin) public onlyAdmin {
-        require(_newAdmin != address(0), "newOwner cannot be 0x0");
-        s.adminAddress = _newAdmin;
-    }
+    // function changeAdmin(address _newAdmin) public onlyAdmin {
+    //     require(_newAdmin != address(0), "newOwner cannot be 0x0");
+    //     s.adminAddress = _newAdmin;
+    // }
 
     function pause() public onlyAdmin {
         require(!s.paused, "Game is already paused");

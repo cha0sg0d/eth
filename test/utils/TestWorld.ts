@@ -4,7 +4,7 @@ import { BigNumber, utils } from 'ethers';
 import { ethers } from 'hardhat';
 import * as settings from '../../settings';
 import { initializeContracts, TestContracts } from './TestContracts';
-import { initializers, shrinkingInitializers, target4Initializers } from './WorldConstants';
+import { initializers, shrinkingInitializers, target4Initializers, customUpgradeInitializers } from './WorldConstants';
 
 export interface World {
   contracts: TestContracts;
@@ -52,7 +52,15 @@ export function shrinkingWorldFixture(): Promise<World> {
   });
 }
 
-export function whilelistWorldFixture(): Promise<World> {
+export function customUpgradeWorldFixture(): Promise<World> {
+  return initializeWorld({
+    //@ts-expect-error due to boolean[] vs ExactArray<boolean> types.
+    initializers: customUpgradeInitializers,
+    enableWhitelist: false,
+  });
+}
+
+export function whitelistWorldFixture(): Promise<World> {
   return initializeWorld({
     initializers,
     enableWhitelist: true,

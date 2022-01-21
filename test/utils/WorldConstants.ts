@@ -39,6 +39,12 @@ export const shrinkingInitializers = settings.parse(settings.Initializers, {
   DISC_UPPER_BOUND: 75,
 });
 
+
+export const customUpgradeInitializers = {
+  ...initializers,
+  UPGRADEABLE_PLANETS: [true,true,false,false,false]
+}
+
 export const VALID_INIT_PERLIN = initializers.INIT_PERLIN_MIN;
 export const NEBULA_PERLIN = initializers.PERLIN_THRESHOLD_1 - 1;
 export const SPACE_PERLIN = initializers.PERLIN_THRESHOLD_1;
